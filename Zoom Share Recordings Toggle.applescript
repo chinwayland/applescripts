@@ -56,4 +56,4 @@ repeat with pageCount from 1 to numberOfTimesToLoop
 end repeat
 
 say "All videos have been processed."
-say (videoCount as text) & "videos were toggled."
+say (videoCount as text) & " videos were toggled."
