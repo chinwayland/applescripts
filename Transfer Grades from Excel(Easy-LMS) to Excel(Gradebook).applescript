@@ -1,15 +1,16 @@
+--  This script will:
 --  Close all workbooks in Excel
+--  Ask you where the Easy-LMS spreadsheet is
+--  Ask you wehre the gradebook is
 --  Open Easy-LMS Spreadsheet first
---  Then open the gradebook
---  Run this script
--- This will do most of the heavy lifting
---  Go to the gradebook and manually enter the grades that are empty or have "Duplicate Scores" 
+--  Then open the gradebook second
+--  This will do most of the heavy lifting
+--  Aftr this script is done, you can manually inspect the gradebook for missing scores
 
 --	Created by: Wayland Chin
 --	Created on: 6/20/20
 --
 --	Copyright © 2020 Wintec, All Rights Reserved
---
 
 use AppleScript version "2.4" -- Yosemite (10.10) or later
 use scripting additions
