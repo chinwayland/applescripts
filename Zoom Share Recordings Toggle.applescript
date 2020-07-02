@@ -1,50 +1,59 @@
 use AppleScript version "2.4" -- Yosemite (10.10) or later
 use scripting additions
 
+# This script will toggle sharing of video recordings in Zoom
+# First, Paste this script into Script Editor on a Mac
+# Second, open up the list of video recordings in Zoom (Safari)
+# Third, Press Play to run the script (Command-R)
+# There is a bug where it counts
+display dialog "Please make sure you have first opened up the list of video recordings in Zoom (Safari). Leave that as the frontmost window in Safari."
 
-set theResponse to display dialog "How many videos are there in total?" default answer "" with icon note buttons {"Cancel", "Continue"} default button "Continue"
+tell application "Safari"
+	tell document 1
+		set totalRecords to (do JavaScript "document.getElementsByName('totalRecords')[0].textContent") as integer
+	end tell
+end tell
 
-set theResponse2 to display dialog "How many second to wait in between clicks? (Depend on speed of your internet connection)" default answer "" with icon note buttons {"Cancel", "Continue"} default button "Continue"
+set theResponse to display dialog "How many second to wait in between clicks? (Depends on speed of your internet connection and computer. Two seconds is a good start to try.)" default answer "2" with icon note buttons {"Cancel", "Continue"} default button "Continue"
 
-set secondsToWait to (text returned of theResponse2)
-set numberOfPages to (text returned of theResponse) / 15
-set numberOfVideosOnLastPage to 15 - (text returned of theResponse) mod 2
+set secondsToWait to (text returned of theResponse)
+set numberOfPages to totalRecords / 15
+set numberOfVideosOnLastPage to totalRecords mod 15
 set numberOfTimesToLoop to round of numberOfPages rounding up
+set videoCount to 0
 
-repeat with i from 1 to numberOfTimesToLoop
-	if i is not numberOfTimesToLoop then
-		set numberOfVideos to 15 - 1
+
+repeat with pageCount from 1 to numberOfTimesToLoop
+	if pageCount is not numberOfTimesToLoop then
+		set numberOfVideosThisPage to 15 - 1
 	else
-		set numberOfVideos to numberOfVideosOnLastPage - 1
+		set numberOfVideosThisPage to numberOfVideosOnLastPage - 1
 	end if
 	tell application "Safari"
 		activate
 		tell document 1
-			repeat with j from 0 to 14
+			repeat with j from 0 to numberOfVideosThisPage
+				set videoCount to videoCount + 1
 				do JavaScript "document.getElementsByClassName('btn btn-default sharemeet_from_myrecordinglist')[" & j & "].click()" #share
 				delay secondsToWait
 				do JavaScript "document.getElementsByClassName('zm-switch__core')[0].click()" #toggle
 				delay secondsToWait
 				do JavaScript "document.getElementsByClassName('zm-button__slot')[0].click()" #done
-				delay secondsToWait
+				say "Video " & (videoCount as text) & " toggled"
 			end repeat
 		end tell
 	end tell
 	
+	tell application "Safari" # go to next page
+		tell document 1
+			set nextButtonStatus to do JavaScript "document.getElementsByClassName('next disabled').length"
+			if nextButtonStatus is 0 then
+				do JavaScript "document.getElementsByClassName('next')[0].firstChild.click()"
+			end if
+		end tell
+	end tell
+	say "Going to the next page, which is page " & (pageCount + 1 as text)
 end repeat
 
-(*
-tell application "Safari"
-	activate
-	tell document 1
-		repeat with i from 0 to 14
-			do JavaScript "document.getElementsByClassName('btn btn-default sharemeet_from_myrecordinglist')[" & i & "].click()" #share
-			delay 2
-			do JavaScript "document.getElementsByClassName('zm-switch__core')[0].click()" #toggle
-			delay 2
-			do JavaScript "document.getElementsByClassName('zm-button__slot')[0].click()" #done
-			delay 2
-		end repeat
-	end tell
-end tell
-*)
+say "All videos have been processed."
+say (videoCount as text) & "videos were toggled."
