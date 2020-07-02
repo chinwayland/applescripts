@@ -5,7 +5,7 @@ use scripting additions
 # First, Paste this script into Script Editor on a Mac
 # Second, open up the list of video recordings in Zoom (Safari)
 # Third, Press Play to run the script (Command-R)
-# There is a bug where it counts
+
 display dialog "Please make sure you have first opened up the list of video recordings in Zoom (Safari). Leave that as the frontmost window in Safari."
 
 tell application "Safari"
