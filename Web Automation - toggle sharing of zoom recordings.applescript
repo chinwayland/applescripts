@@ -1,13 +1,10 @@
-use AppleScript version "2.4" -- Yosemite (10.10) or later
-use scripting additions
-
 # This script does not work, it's got bugs, use the other one
 # First, Paste this script into Script Editor on a Mac
 # Second, open up the list of video recordings in Zoom (Safari)
 # Third, Press Play to run the script (Command-R)
 
-set videoShareToggleList to {"On", "Off"}
-set videoShareGoal to choose from list videoShareToggleList with prompt "Do you want the videos On or Off?" default items {"Off"}
+set videoShareGoalList to {"On", "Off"}
+set videoShareGoal to choose from list videoShareGoalList with prompt "Do you want the videos On or Off?" default items {"Off"}
 
 set theResponse to display dialog "How many second to wait in between clicks? (Depends on speed of your internet connection and computer. Two seconds is a good start to try.)" default answer "2" with icon note buttons {"Cancel", "Continue"} default button "Continue"
 set secondsToWait to (text returned of theResponse)
