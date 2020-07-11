@@ -72,22 +72,39 @@ repeat with pageNumber from 1 to totalPages # Loop through all the pages
 				delay 3
 				set jobCount to jobCount + 1
 				say "job count" & jobCount
+				
 				set companyName to (do JavaScript "document.getElementsByClassName('title company-name')[0].textContent")
 				try
 					say companyName
 				end try
 				set email to do JavaScript "document.getElementsByClassName('fa fa-envelope')[0].nextSibling.nextSibling.textContent"
 				set phoneNumber to do JavaScript "document.getElementsByClassName('fa fa-phone')[0].nextSibling.textContent"
-				set jobAvailableWhen to do JavaScript "document.getElementsByClassName('inline-title')[4].nextElementSibling.textContent"
-				set educationRequired to do JavaScript "document.getElementsByClassName('inline-title')[5].nextElementSibling.textContent"
-				set studentAge to do JavaScript "document.getElementsByClassName('inline-title')[7].nextElementSibling.textContent"
-				set averageNumberOfStudentsPerClass to do JavaScript "document.getElementsByClassName('inline-title')[8].nextElementSibling.textContent"
-				set contactPerson to do JavaScript "document.getElementsByClassName('inline-title')[10].nextElementSibling.textContent"
-				set location to do JavaScript "document.getElementsByClassName('inline-title')[12].nextElementSibling.textContent"
-				set district to do JavaScript "document.getElementsByClassName('inline-title')[13].nextElementSibling.textContent"
-				set streetAddress to do JavaScript "document.getElementsByClassName('inline-title')[14].nextElementSibling.textContent"
-				set schoolURL to do JavaScript "document.getElementsByClassName('inline-title')[15].nextElementSibling.nextElementSibling.nextElementSibling.textContent"
 				set tealitURL to URL
+				-- Position of data can change, so loop through them to find titles, then grab data
+				set numberOfDataItems to do JavaScript "document.getElementsByClassName('inline-title').length"
+				repeat with j from 0 to numberOfDataItems - 1
+					set dataHolder to do JavaScript "document.getElementsByClassName('inline-title')[" & j & "].textContent"
+					if dataHolder is "When Job is Available" then
+						set jobAvailableWhen to do JavaScript "document.getElementsByClassName('inline-title')[" & j & "].nextElementSibling.textContent"
+					else if dataHolder is "Degree Required" then
+						set educationRequired to do JavaScript "document.getElementsByClassName('inline-title')[" & j & "].nextElementSibling.textContent"
+					else if dataHolder is "Age Level Of Class" then
+						set studentAge to do JavaScript "document.getElementsByClassName('inline-title')[" & j & "].nextElementSibling.textContent"
+					else if dataHolder is "Average Number of Students in Class" then
+						set averageNumberOfStudentsPerClass to do JavaScript "document.getElementsByClassName('inline-title')[" & j & "].nextElementSibling.textContent"
+					else if dataHolder is "Contact Person" then
+						set contactPerson to do JavaScript "document.getElementsByClassName('inline-title')[" & j & "].nextElementSibling.textContent"
+					else if dataHolder is "Location" then
+						set location to do JavaScript "document.getElementsByClassName('inline-title')[" & j & "].nextElementSibling.textContent"
+					else if dataHolder is "District" then
+						set district to do JavaScript "document.getElementsByClassName('inline-title')[" & j & "].nextElementSibling.textContent"
+					else if dataHolder is "Street Address" then
+						set streetAddress to do JavaScript "document.getElementsByClassName('inline-title')[" & j & "].nextElementSibling.textContent"
+					else if dataHolder is "Web Site URL" then
+						set schoolURL to do JavaScript "document.getElementsByClassName('inline-title')[" & j & "].nextElementSibling.nextElementSibling.nextElementSibling.textContent"
+					end if
+				end repeat
+				
 				do JavaScript "history.back()"
 				delay 3
 			end tell
