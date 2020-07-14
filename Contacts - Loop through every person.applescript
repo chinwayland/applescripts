@@ -1,3 +1,5 @@
+# This script loops through every person in the Contacts apps, it then loops through every phone of each person.
+
 use AppleScript version "2.4" -- Yosemite (10.10) or later
 use scripting additions
 
