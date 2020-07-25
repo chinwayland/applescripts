@@ -1,6 +1,8 @@
 use AppleScript version "2.4" -- Yosemite (10.10) or later
 use scripting additions
 
+
+-- This script was provided by Yvan from Macscripter - Uses GUI scripting to enter text into a reply email.
 -- Yvan KOENIG (VALLAURIS, France) 14 juin 2020 16:41:04
 
 my Germaine()
