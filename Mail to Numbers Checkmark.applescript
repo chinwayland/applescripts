@@ -1,3 +1,4 @@
+-- This script checks for email address in a mailbox and checks the corresponding row in a Numbers spreadsheet
 # Declare variables Needed
 
 set roughList to {}
