@@ -142,7 +142,7 @@ repeat with i from 1 to count of theURLs
 					if (not (exists row (i + 1))) then
 						add row below last row
 					end if
-					tell application "System Events" to key code 125 using command down
+
 					tell row (i + 1)
 						try
 							set value of cell 1 to theTitle
