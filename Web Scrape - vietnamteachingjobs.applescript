@@ -86,7 +86,8 @@ repeat with i from 1 to count of theURLs
 			set URL to item i of theURLs
 			delay 3
 			set theTitle to do JavaScript "document.getElementsByClassName('entry-title')[0].textContent"
-			set theCompany to do JavaScript "document.getElementsByClassName('wpjb-job-company')[0].text"
+			set theCompany to do JavaScript "document.getElementsByClassName('wpjb-info-label wpjb-company-name')[0].childNodes[1].firstElementChild.textContent.trim()"
+			
 			repeat with j from 0 to 9
 				try
 					if (do JavaScript "document.getElementsByClassName('wpjb-info-label')[" & j & "].textContent.trim()") contains "Date Posted" then
@@ -142,7 +143,7 @@ repeat with i from 1 to count of theURLs
 					if (not (exists row (i + 1))) then
 						add row below last row
 					end if
-					tell application "System Events" to key code 125 using command down
+					
 					tell row (i + 1)
 						try
 							set value of cell 1 to theTitle
@@ -179,7 +180,7 @@ repeat with i from 1 to count of theURLs
 						end try
 						try
 							set value of cell 12 to i
-						end
+						end try
 					end tell
 				end tell
 			end tell
