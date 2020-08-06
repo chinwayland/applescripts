@@ -143,7 +143,11 @@ repeat with i from 1 to count of theURLs
 					if (not (exists row (i + 1))) then
 						add row below last row
 					end if
+<<<<<<< HEAD
 					
+=======
+
+>>>>>>> dadfbfa32878df6976ab1abaec0bb31a09e916f1
 					tell row (i + 1)
 						try
 							set value of cell 1 to theTitle
