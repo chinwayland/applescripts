@@ -1,3 +1,5 @@
+-- This script checks if a number from a Numbers spreadsheet exists in another spreadsheet and makes a checkmark in a column of the second spreadsheet.
+
 use AppleScript version "2.4" -- Yosemite (10.10) or later
 use scripting additions
 
