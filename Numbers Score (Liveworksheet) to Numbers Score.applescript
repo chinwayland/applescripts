@@ -1,3 +1,5 @@
+-- This script checks if a number from a Numbers spreadsheet exists in another spreadsheet and makes a checkmark in a column of the second spreadsheet.
+
 set input to display dialog "What is the new column name?" default answer ""
 set columnName to input's text returned
 
