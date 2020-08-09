@@ -1,3 +1,5 @@
+-- This script replies to all emails in an inbox
+
 # Loop through each message in currently selected mailbox to grab sender's info and put into variables
 tell application "Mail"
 	set senderContents to {}
