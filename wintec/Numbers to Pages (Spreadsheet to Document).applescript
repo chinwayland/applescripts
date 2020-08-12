@@ -35,7 +35,6 @@ tell application "Pages"
 					set width of first column to 100
 					set width of second column to 465
 				end tell
-				
 			end tell
 		end repeat
 	end tell
