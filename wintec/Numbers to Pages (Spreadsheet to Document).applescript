@@ -85,18 +85,6 @@ tell application "Pages"
 					repeat with j from 1 to count of fieldLabels
 						set value of cell 1 of row (j + 1) to item j of fieldLabels
 					end repeat
-					(* 
-					set value of cell 1 of row 1 to "Activity Title"
-					set value of cell 1 of row 2 to "Level"
-					set value of cell 1 of row 3 to "Cutting Edge Module"
-					set value of cell 1 of row 4 to "Language Focus"
-					set value of cell 1 of row 5 to "Activity Duration"
-					set value of cell 1 of row 6 to "Overview"
-					set value of cell 1 of row 7 to "Instructions"
-					set value of cell 1 of row 8 to "Adaptations"
-					set value of cell 1 of row 9 to "Contributor Name"
-					set value of cell 1 of row 10 to "Contributor Email"
-					*)
 				end tell
 			end tell
 		end repeat
