@@ -4,10 +4,14 @@ use scripting additions
 -- This Script grabs records from Numbers and puts them into tables in Pages, one table per page
 # Prompt user to choose excel file and grab data
 set paddingLeft to display dialog "Choose the width of the padding on the left margin. (default: 25)" default answer 25 with icon note buttons {"Cancel", "Continue"} default button "Continue"
-set paddingTop to display dialog "Choose the width of the padding on the top margin. (default: 25)" default answer 25 with icon note buttons {"Cancel", "Continue"} default button "Continue"
+set paddingTop to display dialog "Choose the width of the padding on the top margin. (default: 90)" default answer 90 with icon note buttons {"Cancel", "Continue"} default button "Continue"
 set paddingLeftRightMatchChoice to {true, false}
 set paddingLeftRightMatch to choose from list paddingLeftRightMatchChoice with prompt "Do you want the padding for the left and right margin to match?" default items {false}
-
+-- promput user for images
+display dialog ("Select the Wintec logo to import")
+set logoWintec to (choose file with prompt "Select the Wintec Logo to import:")
+display dialog ("Select the Jinhua Polytechnic logo to import")
+set logoJinhua to (choose file with prompt "Select the Jinhua Logo to import:")
 
 set leftPadding to text returned of paddingLeft
 set topPadding to text returned of paddingTop
@@ -41,6 +45,25 @@ tell application "Pages"
 		repeat with i from 1 to recordCount - 1
 			make page
 		end repeat
+		
+		repeat with i from 1 to count of pages
+			tell page i
+				-- import the image
+				make new image with properties {file:logoWintec}
+				make new image with properties {file:logoJinhua}
+				
+				tell image 1
+					set height to 50
+					set position to {25, 25}
+				end tell
+				
+				tell image 2
+					set height to 50
+					set position to {525, 25}
+				end tell
+			end tell
+		end repeat
+		
 		repeat with i from 1 to count of pages
 			tell page i
 				make table with properties {column count:2, row count:(count of items of item 1 of rowData) + 1}
