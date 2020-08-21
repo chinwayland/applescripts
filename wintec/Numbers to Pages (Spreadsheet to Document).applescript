@@ -3,18 +3,18 @@ use scripting additions
 
 -- This Script grabs records from Numbers and puts them into tables in Pages, one table per page
 # Prompt user to choose excel file and grab data
-set paddingLeft to display dialog "Choose the width of the padding on the left margin. (default: 25)" default answer 25 with icon note buttons {"Cancel", "Continue"} default button "Continue"
-set paddingTop to display dialog "Choose the width of the padding on the top margin. (default: 90)" default answer 90 with icon note buttons {"Cancel", "Continue"} default button "Continue"
-set paddingLeftRightMatchChoice to {true, false}
-set paddingLeftRightMatch to choose from list paddingLeftRightMatchChoice with prompt "Do you want the padding for the left and right margin to match?" default items {false}
+set marginLeft to display dialog "Choose the width of the margin on the left. (default: 25)" default answer 25 with icon note buttons {"Cancel", "Continue"} default button "Continue"
+set marginTop to display dialog "Choose the width of the margin on the top. (default: 90)" default answer 90 with icon note buttons {"Cancel", "Continue"} default button "Continue"
+set marginLeftRightMatchChoice to {true, false}
+set marginLeftRightMatch to choose from list marginLeftRightMatchChoice with prompt "Do you want the margin for the left side and right side to match?" default items {false}
 -- promput user for images
 display dialog ("Select the Wintec logo to import")
 set logoWintec to (choose file with prompt "Select the Wintec Logo to import:")
 display dialog ("Select the Jinhua Polytechnic logo to import")
 set logoJinhua to (choose file with prompt "Select the Jinhua Logo to import:")
 
-set leftPadding to text returned of paddingLeft
-set topPadding to text returned of paddingTop
+set leftmargin to text returned of marginLeft
+set topmargin to text returned of marginTop
 
 #set logo to (choose file with prompt "Please select logo file:")
 set rowData to {}
@@ -68,13 +68,13 @@ tell application "Pages"
 			tell page i
 				make table with properties {column count:2, row count:(count of items of item 1 of rowData) + 1}
 				tell table 1
-					set position to {leftPadding, topPadding + (792 * (i - 1))}
+					set position to {leftmargin, topmargin + (792 * (i - 1))}
 					set width of first column to 100
 					
-					if item 1 of paddingLeftRightMatch is true then
-						set width of second column to (465 - leftPadding)
+					if item 1 of marginLeftRightMatch is true then
+						set width of second column to (465 - leftmargin)
 					else
-						set width of second column to (465 - (leftPadding * 0.75))
+						set width of second column to (465 - (leftmargin * 0.75))
 					end if
 					
 					tell cell 1
