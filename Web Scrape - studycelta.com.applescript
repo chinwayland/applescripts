@@ -7,34 +7,50 @@ set timeZone to {"GMT -7 to -3 Americas ", "GMT 0 to + 2 Europe-Africa", "GMT +3
 
 
 tell application "Safari"
+	#	make new document
 	set centerData to {}
 	tell window 1
-		
-		# if the internet is fast, the code below cycles through all the pages
 		(*
-		set URL to "https://www.studycelta.com/tefl-courses-online/online-celta-courses/"
-		delay 3
+		# if the internet is fast, the code below cycles through all the pages
+		tell tab 1
+			set URL to "https://www.studycelta.com/tefl-courses-online/online-celta-courses/"
+		end tell
+		
+		delay 10
 		set urls to {}
-		repeat with i from 0 to ((do JavaScript "document.getElementsByClassName('ow-button-hover').length") - 1)
+		
+		repeat with i from 0 to 3
 			set end of urls to do JavaScript "document.getElementsByClassName('ow-button-hover')[" & i & "].href"
 		end repeat
-				
+		
 		repeat with i from 1 to count of urls
-			set URL to item i of urls
-			delay 3
+			if (not (exists (tab i))) then
+				make new tab
+			end if
+			tell tab i
+				set URL to item i of urls
+				delay 3
+			end tell
+			
 		end repeat
-				
+		
 		*)
+		
+		# If the internet is not good, manually load all four tabs by yourself first
+		
+		
 		repeat with safariTab from 1 to count of tabs
 			tell tab safariTab
 				# i = class="celta_course_table" = coursetype 		
 				# j = class="celta_course_location_table"
 				# i loops through the course types or blue table sections
 				set numberOfCourseTypes to (do JavaScript "document.getElementsByClassName('celta_course_table').length")
+				
 				repeat with i from 0 to (numberOfCourseTypes - 1)
 					set courseType to do JavaScript "document.getElementsByClassName('celta_course_table')[" & i & "].firstChild.firstChild.firstChild.textContent"
 					# j loops through each individual center
 					set numberOfCenters to (do JavaScript "document.getElementsByClassName('celta_course_table')[" & i & "].childNodes[1].firstChild.firstChild.childNodes.length")
+					
 					repeat with j from 0 to (numberOfCenters - 1)
 						
 						# k loops through each row or data item of each center
@@ -47,10 +63,12 @@ tell application "Safari"
 							set centerDate to (do JavaScript "document.getElementsByClassName('celta_course_table')[" & i & "].childNodes[1].firstChild.firstChild.childNodes[" & j & "].firstChild.firstChild.childNodes[" & k & "].firstChild.firstChild.textContent")
 							set end of centerData to {item safariTab of timeZone, courseType, centerCity, centerPrice, centerDate}
 						end repeat
+						
 					end repeat
+					
 				end repeat
+				
 			end tell
-			
 		end repeat
 	end tell
 end tell
