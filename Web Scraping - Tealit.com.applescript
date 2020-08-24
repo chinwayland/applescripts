@@ -1,5 +1,6 @@
 use scripting additions
 
+-- This script scrapes jobs from tealit.com and puts them into a Numbers spresadsheet
 set clickCounter to 0
 set jobCount to 0
 

@@ -1,6 +1,8 @@
 use AppleScript version "2.4" -- Yosemite (10.10) or later
 use scripting additions
 
+--This script create tables in Microsoft Word. One table per page
+
 set maxPages to 25
 set tblRows to 3
 set tblColumns to 4

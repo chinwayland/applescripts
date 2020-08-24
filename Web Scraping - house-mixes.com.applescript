@@ -1,7 +1,7 @@
 use AppleScript version "2.4" -- Yosemite (10.10) or later
 use scripting additions
 
-# This Script will download all the MP3s from a specifix user from house-mixes.com
+-- This Script will download all the MP3s from a specifix user from house-mixes.com
 
 tell application "Safari"
 	activate
