@@ -4,8 +4,8 @@ use scripting additions
 --This script create tables in Microsoft Word. One table per page
 
 set maxPages to 25
-set tblRows to 3
-set tblColumns to 4
+set tblRows to 9
+set tblColumns to 2
 
 tell application "Microsoft Word"
 	make new document
@@ -19,6 +19,14 @@ tell application "Microsoft Word"
 			insert break at rng break type page break
 		end if
 		
+		tell border options of tbl
+			set inside line style to line style single
+			set inside line width to line width100 point
+			set outside line style to line style single
+			set outside line width to line width100 point
+		end tell
+		
 	end repeat
+	set table gridlines of view of active window to true
 	
 end tell
