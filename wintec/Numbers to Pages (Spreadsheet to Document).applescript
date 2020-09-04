@@ -37,7 +37,7 @@ tell application "Numbers"
 				set recordCount to (count of rows) - 2
 				repeat with i from 1 to count of rows
 					tell row i
-						set end of rowData to {value of cell 6, value of cell 7, value of cell 8, value of cell 9, value of cell 10, value of cell 11, value of cell 12, value of cell 13, value of cell 5, value of cell 4}
+						set end of rowData to {value of cell 6, value of cell 7, value of cell 8, value of cell 9, value of cell 10, value of cell 11, value of cell 12, value of cell 13, value of cell 5, value of cell 4, value of cell 14}
 					end tell
 				end repeat
 			end tell
@@ -112,7 +112,7 @@ end tell
 # Set the Field labels
 tell application "Pages"
 	tell document 1
-		set fieldLabels to {"Activity Title", "Level", "Cutting Edge Unit", "Language Focus", "Activity Duration", "Overview", "Instructions", "Adaptations", "Contributor Name", "Contributor Email"}
+		set fieldLabels to {"Activity Title", "Level", "Cutting Edge Unit", "Language Focus", "Activity Duration", "Overview", "Instructions", "Adaptations", "Contributor Name", "Contributor Email", "Linked File"}
 		repeat with i from 1 to count of pages
 			tell page i
 				tell table 1
