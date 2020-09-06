@@ -1,6 +1,3 @@
-use AppleScript version "2.4" -- Yosemite (10.10) or later
-use scripting additions
-
 -- This script scrapes data from studycelta.com
 
 set timeZone to {"GMT -7 to -3 Americas ", "GMT 0 to + 2 Europe-Africa", "GMT +3 to + 6 Central Asia", "GMT + 7 to + 10 East Asia-Pacific"}

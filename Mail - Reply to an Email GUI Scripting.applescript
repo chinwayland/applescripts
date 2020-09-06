@@ -1,7 +1,3 @@
-use AppleScript version "2.4" -- Yosemite (10.10) or later
-use scripting additions
-
-
 -- This script was provided by Yvan from Macscripter - Uses GUI scripting to enter text into a reply email.
 -- Yvan KOENIG (VALLAURIS, France) 14 juin 2020 16:41:04
 
@@ -30,9 +26,9 @@ on Germaine()
 			set frontmost to true
 			tell window 1
 				-- class of UI elements --> {static text, text field, button, static text, text field, button, static text, text field, button, static text, text field, button, static text, text field, scroll area, pop up button, static text, pop up button, static text, button, button, button, toolbar, group}
-				-- name of pop up buttons --> {"DeÂ :", "SignatureÂ :"}
-				-- value of pop up buttons --> {"Yvan KOENIG â€“ koenigyvan<at>mac<dot>com", "Aucune"}
-				if not (exists (pop up button 1 whose name is signature_loc)) then error "The â€œ" & signature_loc & "â€ pop up is unavailable" number -128
+				-- name of pop up buttons --> {"DeÊ:", "SignatureÊ:"}
+				-- value of pop up buttons --> {"Yvan KOENIG Ð koenigyvan<at>mac<dot>com", "Aucune"}
+				if not (exists (pop up button 1 whose name is signature_loc)) then error "The Ò" & signature_loc & "Ó pop up is unavailable" number -128
 				tell scroll area 1
 					tell UI element 1
 						tell group 3

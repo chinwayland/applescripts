@@ -1,6 +1,3 @@
-use AppleScript version "2.4" -- Yosemite (10.10) or later
-use scripting additions
-
 -- This script counts the number of people per group and pastes the data in a Numbers spreadsheet
 
 set groupNameAndCount to {}

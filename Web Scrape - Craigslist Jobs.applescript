@@ -1,6 +1,3 @@
-use AppleScript version "2.4" -- Yosemite (10.10) or later
-use scripting additions
-
 -- This script scrapes jobs from craigslist and puts them into a Numbers document
 
 set columnHeaders to {"Job Title", "Location", "Compensation", "Employment Type", "Internship", "Non-Profit", "Telecommuting", "Disability", "Relocation", "jobURL"}

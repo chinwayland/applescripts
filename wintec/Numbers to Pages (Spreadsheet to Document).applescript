@@ -1,6 +1,3 @@
-use AppleScript version "2.4" -- Yosemite (10.10) or later
-use scripting additions
-
 -- This Script grabs records from Numbers and puts them into tables in Pages, one table per page
 # Prompt user to choose excel file and grab data
 #say "Please choose the left margin size"

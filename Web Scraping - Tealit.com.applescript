@@ -1,5 +1,3 @@
-use scripting additions
-
 -- This script scrapes jobs from tealit.com and puts them into a Numbers spresadsheet
 set clickCounter to 0
 set jobCount to 0
@@ -173,7 +171,7 @@ repeat with pageNumber from 1 to totalPages # Loop through all the pages
 		tell application "Safari"
 			tell document 1
 				try
-					if (do JavaScript "document.getElementsByClassName('page-link')[" & j & "].textContent") is "â€º" then
+					if (do JavaScript "document.getElementsByClassName('page-link')[" & j & "].textContent") is "Ý" then
 						do JavaScript "document.getElementsByClassName('page-link')[" & j & "].click()"
 						delay 3
 						say "clicked to go to the next page"

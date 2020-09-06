@@ -1,6 +1,3 @@
-use AppleScript version "2.4" -- Yosemite (10.10) or later
-use scripting additions
-
 -- This script is unfinished. Can grab data data from Excel
 
 tell application "Microsoft Excel"
