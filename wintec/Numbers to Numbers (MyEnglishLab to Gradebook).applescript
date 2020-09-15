@@ -5,8 +5,11 @@ tell application "Numbers"
 	set targetFile to id of (open (choose file with prompt "Target File"))
 	
 	tell document id sourceFile
+		set unitGrades to name of sheets
+		set chosenUnit to choose from list (unitGrades) with prompt "Please choose the Unit you want to import grades from (Usually, one of the 'Assignments' or 'Video Activities'."
+		set chosenUnit to item 1 of chosenUnit
 		tell me to say "grabbing data"
-		tell sheet 3
+		tell sheet chosenUnit
 			tell table 1
 				set unitName to value of cell "C2"
 				set reducedUnitName to characters 1 through (offset of ":" in unitName) of unitName
@@ -30,13 +33,30 @@ tell application "Numbers"
 		tell me to say "pasting data"
 		tell sheet 1
 			tell table 1
-				repeat with i from 1 to count of activity
-					add column after the last column
-					set the value of the first cell of the last column to item i of activity # set column name
-				end repeat
+				try
+					if (first cell of row 1 whose value of it contains item 1 of activity) is not missing value then
+						tell me to say "updating cells"
+					end if
+				on error
+					repeat with i from 1 to count of activity # add new columns
+						add column after the last column
+						set the value of the first cell of the last column to item i of activity # set column name
+						# set the format of the last column to checkbox
+						repeat with j from 2 to (count of cells in the last column) - 1
+							set the format of cell j to checkbox
+						end repeat
+					end repeat
+				end try
+				set newUsernames to {}
 				repeat with i from 1 to count of scores
 					tell column 11
-						set rowAddress to address of row of (first cell whose value of it contains item 2 of item i of scores) # get row name of username
+						try
+							set rowAddress to address of row of (first cell whose value of it contains item 2 of item i of scores) # get row name of username							
+						on error
+							tell me to say "encountered new username, add and run script again"
+							set end of newUsernames to item 2 of item i of scores
+						end try
+						
 					end tell
 					tell row 1
 						set columnAddress to address of column of (first cell whose value of it contains item 1 of item i of scores) # get column name of activity
