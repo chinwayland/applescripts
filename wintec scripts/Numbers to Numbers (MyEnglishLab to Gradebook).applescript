@@ -12,8 +12,11 @@ tell application "Numbers"
 		tell sheet chosenUnit
 			tell table 1
 				set unitName to value of cell "C2"
-				set reducedUnitName to characters 1 through (offset of ":" in unitName) of unitName
-				set reducedUnitName to reducedUnitName as string
+				# set reducedUnitName to characters 1 through (offset of ":" in unitName) of unitName
+				# set reducedUnitName to reducedUnitName as string
+				
+				set reducedUnitName to text 1 through (offset of ":" in unitName) of unitName --> "UNIT 1:"
+				
 				set scores to {}
 				set skip to {"---"}
 				set activity to {}
