@@ -28,16 +28,40 @@ tell application "Numbers"
 	tell document id targetFile
 		tell sheet 1
 			tell table 1
-				add column after last column
-				set value of first cell of last column to chosenMailbox
-				tell row 1
+				set rowData to value of cells of row 1
+				if chosenMailbox is not in rowData then
+					add column after last column
+					set value of first cell of last column to chosenMailbox
+					(*
+					tell row 1 # find email column
+						set columnAddress to address of column of first cell whose value contains "email"
+					end tell
+					set gradebookEmails to value of cells of column columnAddress
+					set emailsThatDoNotMatch to {}
+					repeat with email in listOfEmails
+						if email is in gradebookEmails then
+							set the value of the cell (address of row of (first cell whose value is email)) of the last column to true
+						else
+							set end of emailsThatDoNotMatch to email
+						end if
+					end repeat
+*)
+				end if
+				tell row 1 # find email column
 					set columnAddress to address of column of first cell whose value contains "email"
 				end tell
+				
 				set gradebookEmails to value of cells of column columnAddress
+				# find column to update
+				repeat with i from 1 to count of columns
+					tell row 1
+						set columnToUpdate to column of (first cell whose value is chosenMailbox)
+					end tell
+				end repeat
 				set emailsThatDoNotMatch to {}
 				repeat with email in listOfEmails
 					if email is in gradebookEmails then
-						set the value of the cell (address of row of (first cell whose value is email)) of the last column to true
+						set the value of the cell (address of row of (first cell whose value is email)) of columnToUpdate to true
 					else
 						set end of emailsThatDoNotMatch to email
 					end if

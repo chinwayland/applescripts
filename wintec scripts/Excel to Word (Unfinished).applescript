@@ -3,6 +3,14 @@
 #Grab information from Excel
 tell application "Microsoft Excel"
 	open (choose file with prompt "Choose File:")
+end tell
+
+tell application "Script Debugger"
+	activate
+end tell
+
+tell application "Microsoft Excel"
+	tell me to say "grabbing data"
 	set rowData to {}
 	tell workbook 1
 		tell worksheet 1
@@ -17,13 +25,17 @@ tell application "Microsoft Excel"
 	end tell
 end tell
 
+
 #Paste data into Word inside tables (not complete)
+(*
 tell application "Microsoft Word"
+	activate
+	tell me to say "pasting data"
 	make new document
 	
 	repeat ((count of rowData) - 1) times
 		set oDoc to active document
-		set end of oTable to make new table at oDoc with properties Â
+		set end of oTable to make new table at oDoc with properties Â¬
 			{text object:(create range oDoc start 0 end 0), number of rows:8, number of columns:2}
 		tell document 1
 			set enable borders of border options of table 1 to true
@@ -33,5 +45,21 @@ tell application "Microsoft Word"
 			insert break at text object
 		end tell
 	end repeat
+end tell
+*)
+
+tell application "Microsoft Word"
+	activate
+	tell me to say "pasting data"
+	make document
+	set targetDocument to active document
+	
+	set listOfTables to {}
+	set end of listOfTables to make new table at targetDocument with properties {text object:(create range targetDocument start 0 end 0), number of rows:8, number of columns:2}
+	set enable borders of border options of table 1 of targetDocument to true
+	tell targetDocument
+		properties
+		
+	end tell
 	
 end tell
