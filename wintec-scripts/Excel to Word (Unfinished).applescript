@@ -1,8 +1,9 @@
--- This script is not yet finished.
+-- This script is not yet finished. Need to figure out how to refer to a specific cell in a table
 
 #Grab information from Excel
 tell application "Microsoft Excel"
-	open (choose file with prompt "Choose File:")
+	open (choose file with prompt "Source File")
+	set sourceFile to active workbook
 end tell
 
 tell application "Script Debugger"
@@ -12,7 +13,7 @@ end tell
 tell application "Microsoft Excel"
 	tell me to say "grabbing data"
 	set rowData to {}
-	tell workbook 1
+	tell sourceFile
 		tell worksheet 1
 			tell used range
 				repeat with i from 2 to count of rows
@@ -48,18 +49,55 @@ tell application "Microsoft Word"
 end tell
 *)
 
+set maxPages to number of items in rowData
+set tblRows to number of items in item 1 of rowData
+set tblColumns to 2
+
 tell application "Microsoft Word"
 	activate
-	tell me to say "pasting data"
 	make document
-	set targetDocument to active document
-	
-	set listOfTables to {}
-	set end of listOfTables to make new table at targetDocument with properties {text object:(create range targetDocument start 0 end 0), number of rows:8, number of columns:2}
-	set enable borders of border options of table 1 of targetDocument to true
-	tell targetDocument
-		properties
-		
+	set doc to active document
+	(*
+	tell doc # create the necessary number of pages
+		repeat maxPages - 1 times
+			insert break at text object break type page break
+		end repeat
 	end tell
+	*)
+	tell doc # create the necessary number of pages and tables
+		repeat with i from 1 to maxPages
+			# new table
+			set tbl to make new table at doc with properties {text object:(create range doc start 0 end 0), number of rows:tblRows, number of columns:tblColumns}
+			# new page
+			set rng to collapse range (text object of tbl) direction collapse start
+			if i < maxPages then
+				insert break at rng break type page break
+			end if
+		end repeat
+		
+		repeat with i from 1 to number of tables
+			tell border options of table i
+				set inside line style to line style single
+				set inside line width to line width100 point
+				set outside line style to line style single
+				set outside line width to line width100 point
+			end tell
+			
+			tell table i
+				
+				-- Something to do with the text object of a table
+				
+				set table gridlines to true
+				tell column 1
+					repeat with j from 1 to tblRows
+						#			set value of cell j to item j of item i of rowData
+					end repeat
+				end tell
+			end tell
+		end repeat
+		#		set table gridlines of view of active window to true
+	end tell
+	
+	
 	
 end tell

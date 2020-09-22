@@ -1,7 +1,8 @@
 -- This script will check the exported gradebook from MyEnglishLav and check if the student has done the assignments. They will get a checkmark for each assignment done. The MyEnglishLab Username has to be in the gradebook for this to work.
 tell application "Numbers"
-	
+	tell me to say "Where is the master gradebook report export from MyEnglishLab?"
 	set sourceFile to id of (open (choose file with prompt "Source File"))
+	tell me to say "Where is the Class gradebook that you want to update?"
 	set targetFile to id of (open (choose file with prompt "Target File"))
 	
 	tell document id sourceFile
@@ -71,3 +72,4 @@ tell application "Numbers"
 		end tell
 	end tell
 end tell
+say "Finished"
