@@ -12,9 +12,11 @@ tell application "Mail"
 	*)
 	
 	set accountMailboxes to name of mailboxes of account "Wintec" #chosenAccount # grab list of mailboxes
+	tell me to say "Select the mailbox with the assignments you want to retrieve."
 	set chosenMailbox to choose from list accountMailboxes with prompt "Please select the mailbox with the emails you want to process." # choose a mailbox
 	set chosenMailbox to item 1 of chosenMailbox # flatten list to string
 	set chosenMailboxAndAccount to mailbox chosenMailbox of account "Wintec" #chosenAccount # combine mailbox and account into one variable
+	tell me to say "Grabbing Data"
 	set senders to sender of messages of chosenMailboxAndAccount # grab list of senders (Name, Email)
 	set listOfEmails to {} # variable for emails only
 	repeat with i in senders # extract the email addresses from the list of senders
@@ -24,7 +26,9 @@ end tell
 
 tell application "Numbers"
 	activate
+	tell me to say "Select the gradebook that you want to transfer data to"
 	set targetFile to id of (open (choose file with prompt "Target File"))
+	tell me to say "transfering data"
 	tell document id targetFile
 		tell sheet 1
 			tell table 1
