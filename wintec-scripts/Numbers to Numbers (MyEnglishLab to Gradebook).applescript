@@ -1,89 +1,106 @@
--- This script will check the exported gradebook from MyEnglishLav and check if the student has done the assignments. They will get a checkmark for each assignment done. The MyEnglishLab Username has to be in the gradebook for this to work.
+-- This script will check the exported gradebook or multiple gradebook export from MyEnglishLab and check if the student has done the assignments. They will get a checkmark for each assignment done. The MyEnglishLab Username has to be in the gradebook for this to work. does not yet work for unit progress tests and video activities
 tell application "Numbers"
-	tell me to say "Where is the master gradebook report export from MyEnglishLab?"
+	tell me to say "Where is the gradebook report from MyEnglishLab?"
 	set sourceFile to id of (open (choose file with prompt "Source File"))
-	tell me to say "Where is the Class gradebook that you want to update?"
+	tell me to say "Where is the class gradebook that you want to update?"
 	set targetFile to id of (open (choose file with prompt "Target File"))
-	
 	tell document id sourceFile
-		set unitGrades to name of sheets
-		set reducedUnitGrades to {}
-		repeat with i from 1 to count of unitGrades
-			if item i of unitGrades contains "Assignments" then
-				set end of reducedUnitGrades to item i of unitGrades
+		set gradesFromEachUnit to {}
+		repeat with i from 1 to count of sheets
+			if name of sheet i contains "Assignments" then
+				set end of gradesFromEachUnit to name of sheet i
 			end if
 		end repeat
 		tell me to say "Which Unit's grades do you want to import?"
-		set chosenUnit to choose from list (reducedUnitGrades) with prompt "Please choose the Unit you want to import grades from (Usually, one of the 'Assignments' or 'Video Activities'." # ask user to choose which sheet
+		# ask user to choose which sheet / unit to import
+		set chosenUnit to choose from list (gradesFromEachUnit) with prompt "Please choose the Unit you want to import grades from"
 		set chosenUnit to item 1 of chosenUnit # flattens the list to a string
-		tell me to say "grabbing data"
 		tell sheet chosenUnit
 			tell table 1
-				if chosenUnit is "Assignments VIDEO ACTIVITIES" then
-					set unitName to value of cell "C3" # Grab Unit Name
-				else
-					set unitName to value of cell "C2" # Grab Unit Name					
-				end if
 				
-				set reducedUnitName to text 1 through (offset of ":" in unitName) of unitName --> "UNIT 1:" # truncate to just unit and number and colon
-				set scores to {}
-				set skip to {"---", missing value}
-				set activity to {}
-				repeat with i from 3 to (((count of columns) - 4)) by 3 # loop through every third column, skipping first two and last two columns
-					if chosenUnit is "Assignments VIDEO ACTIVITIES" then
-						set end of activity to value of cell 3 of column i & " " & value of cell 4 of column i # add column name to variable
-					else
-						set end of activity to value of cell 2 of column i & " " & value of cell 4 of column i # add column name to variable
-					end if
-					repeat with j from 6 to (count of cells of column 1) - 1 # loop through every row in each column
-						if value of cell i of row j is not in skip then # if score not blank then add activity name, username, and score to list
-							if chosenUnit is "Assignments VIDEO ACTIVITIES" then
-								set end of scores to {value of cell 3 of column i & " " & value of cell 4 of column i, value of cell 2 of row j, value of cell i of row j}
-							else
-								set end of scores to {value of cell 2 of column i & " " & value of cell 4 of column i, value of cell 2 of row j, value of cell i of row j}
-								
-							end if
-							
+				tell column 1
+					set classNames to {}
+					repeat with i from 1 to count of cells
+						if value of cell i contains "Sept 2020" then
+							set end of classNames to value of cell i
 						end if
 					end repeat
+				end tell
+				
+				# Ask user to choose the class to import grades from
+				tell me to say "Which class' grades do you want to import?"
+				set chosenClass to choose from list classNames with prompt "Which class do you wan to import grades from?"
+				set chosenClass to item 1 of chosenClass # Flatten to string
+				tell me to say "Grabbing Data"
+			end tell
+		end tell
+	end tell
+end tell
+
+tell application "Script Debugger"
+	activate
+	set event log visible of documents to true
+end tell
+
+
+tell application "Numbers"
+	tell document id sourceFile
+		tell sheet chosenUnit
+			tell table 1
+				# Find the starting row of the the class
+				set startOfClassInfoRowAddress to address of row of first cell where value of it contains chosenClass
+				# Find the ending row of the class
+				repeat with i from startOfClassInfoRowAddress to count of rows
+					if value of cell i of column 1 is "Summary" then
+						set endOfClassInfoRowAddress to address of row of cell i of column 1
+						exit repeat
+					end if
+				end repeat
+				set scoreColumnAddress to address of column of first cell where value of it is "Score"
+				set scoreRowAddress to address of row of first cell where value of it is "Score"
+				set columnHeaderNames to {}
+				set scores to {}
+				set loopCounter to 0
+				repeat with i from 1 to count of columns
+					#get and create column header names
+					if value of cell scoreRowAddress of column i contains "Score" then
+						set end of columnHeaderNames to value of cell 2 of column i & " " & value of cell 3 of column i & " " & value of cell 4 of column i
+						set loopCounter to loopCounter + 1
+						repeat with j from (startOfClassInfoRowAddress + 1) to (endOfClassInfoRowAddress - 1)
+							if value of cell j of column i is not "---" then
+								set end of scores to {value of cell j of column 2, item loopCounter of columnHeaderNames, value of cell j of column i}
+							end if
+						end repeat
+					end if
 				end repeat
 			end tell
 		end tell
 	end tell
-	
-	
+end tell
+
+tell me to say "pasting data"
+tell application "Numbers"
+	activate
 	tell document id targetFile
-		tell me to say "pasting data"
-		if chosenUnit is "Assignments VIDEO ACTIVITIES" then
-			set sheetToUpdate to sheet 2
-		else
-			set sheetToUpdate to sheet 1
-		end if
-		tell sheetToUpdate
+		tell sheet 1
 			tell table 1
-				try # check if checkmarks already exist for this unit
-					if (first cell of row 1 whose value of it contains item 1 of activity) is not missing value then
-						tell me to say "updating cells"
-					end if
-				on error
-					repeat with i from 1 to count of activity # If not previous checked, add new columns
-						add column after the last column
+				# Check if Unit already has been imported, if not add columns
+				if value of cells of row 1 contains item 1 of columnHeaderNames then
+					# Update Cells
+				else
+					repeat with i from 1 to count of columnHeaderNames
+						add column after last column
 						set the format of the last column to checkbox
-						set the value of the first cell of the last column to item i of activity # set column name
-						
-						(*
-						repeat with j from 2 to (count of cells in the last column) - 1
-							tell the last column
-								set the format of cell j to checkbox
-							end tell
-						end repeat
-						*)
+						set the value of the first cell of the last column to item i of columnHeaderNames
 					end repeat
-				end try
+				end if
 				
-				set newUsernames to {}
+				# get column where the usernames are				
+				tell row 1
+					set usernameColumnAddress to address of column of first cell whose value of it contains "MyEnglishLab Username"
+				end tell
 				
-				# find column with username
+				(*
 				tell row 1
 					repeat with i from 1 to count of cells
 						if value of cell i contains "MyEnglishLab Username" then
@@ -92,38 +109,42 @@ tell application "Numbers"
 					end repeat
 				end tell
 				
-				
-				
-				repeat with i from 1 to count of scores
-					
-					tell usernameColumn
-						
-						try
-							set rowAddress to address of row of (first cell whose value of it contains item 2 of item i of scores) # get row name of username							
-						on error
-							# tell me to say "encountered new username, add and run script again"
-							set end of newUsernames to item 2 of item i of scores
-							repeat 1 times # fake loop to simulate continue
-								exit repeat
+				*)
+				(*
+				repeat with i from 1 to count of scores # loop through scores import
+					repeat with j from 1 to count of columns # loop through columns to find matches
+						if value of cell 1 of column j contains item 2 of item i of scores then # if the column matches
+							repeat with k from 1 to count of rows
+								if value of cell k of usernameColumn contains item 1 of item i of scores then
+									set value of cell k of column j to true
+									exit repeat
+								end if
 							end repeat
-						end try
-						
+						end if
+					end repeat
+				end repeat
+				*)
+				
+				repeat with i from 1 to count of scores # loop through scores import
+					tell column usernameColumnAddress
+						set rowCoordinate to address of row of (first cell whose value of it is item 1 of item i of scores)
 					end tell
-					
 					tell row 1
-						set columnName to column of (first cell whose value of it contains item 1 of item i of scores) # get column name of activity
+						set columnCoordinate to address of column of (first cell whose value of it is item 2 of item i of scores)
 					end tell
-					tell columnName
-						tell cell rowAddress
+					tell column columnCoordinate
+						tell cell rowCoordinate
 							set value to true
 						end tell
 					end tell
+					
 				end repeat
+				
+				
+				
 			end tell
 		end tell
 	end tell
-	
-	
 end tell
 
 say "Finished"
