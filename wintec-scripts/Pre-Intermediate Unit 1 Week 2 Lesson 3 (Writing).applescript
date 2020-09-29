@@ -1,5 +1,4 @@
-use AppleScript version "2.4" -- Yosemite (10.10) or later
-use scripting additions
+-- This script will grab data from a Numbers spreadsheet and make each row into a table in a Pages document
 
 tell application "Numbers"
 	tell document 1

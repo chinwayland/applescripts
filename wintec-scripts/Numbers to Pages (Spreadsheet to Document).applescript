@@ -1,4 +1,5 @@
 -- This Script grabs records from Numbers and puts them into tables in Pages, one table per page
+
 # Prompt user to choose excel file and grab data
 #say "Please choose the left margin size"
 set marginLeft to display dialog "Choose the width of the margin on the left. (default: 25, minimum: 1)" default answer 25 with icon note buttons {"Cancel", "Continue"} default button "Continue"

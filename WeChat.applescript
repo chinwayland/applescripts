@@ -1,6 +1,5 @@
 -- This script searches for a specific conversation in WeChat and then sends a designated message to that conversation
 
-
 tell application "System Events"
 	tell process "WeChat"
 		tell window 1

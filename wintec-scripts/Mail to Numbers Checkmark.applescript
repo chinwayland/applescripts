@@ -1,17 +1,13 @@
-use AppleScript version "2.4" -- Yosemite (10.10) or later
-use scripting additions
-
-
 -- This script checks a mailbox for messages and email addresses and then checks a box in the corresponding cell in a Numbers document
 
 tell application "Mail"
-	(*
+	
 	set emailAccounts to name of accounts # grab list of accounts
 	set chosenAccount to choose from list emailAccounts with prompt "Please choose the mail account" # choose an account
 	set chosenAccount to item 1 of chosenAccount # flatten list to string
-	*)
 	
-	set accountMailboxes to name of mailboxes of account "Wintec" #chosenAccount # grab list of mailboxes
+	
+	set accountMailboxes to name of mailboxes of account chosenAccount # grab list of mailboxes
 	tell me to say "Select the mailbox with the assignments you want to retrieve."
 	set chosenMailbox to choose from list accountMailboxes with prompt "Please select the mailbox with the emails you want to process." # choose a mailbox
 	set chosenMailbox to item 1 of chosenMailbox # flatten list to string

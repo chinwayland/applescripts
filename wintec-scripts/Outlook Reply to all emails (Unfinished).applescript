@@ -1,4 +1,5 @@
 -- This script replies to all emails in an Outlook Inbox (not complete)
+
 set senders to {}
 set emails to {}
 set cellHit to {}

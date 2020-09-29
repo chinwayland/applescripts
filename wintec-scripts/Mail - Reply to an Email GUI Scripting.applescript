@@ -1,5 +1,4 @@
--- This script was provided by Yvan from Macscripter - Uses GUI scripting to enter text into a reply email.
--- Yvan KOENIG (VALLAURIS, France) 14 juin 2020 16:41:04
+-- This script was provided by Yvan from Macscripter - Uses GUI scripting to enter text into a reply email. By Yvan KOENIG (VALLAURIS, France) 14 juin 2020 16:41:04
 
 my Germaine()
 
@@ -26,9 +25,9 @@ on Germaine()
 			set frontmost to true
 			tell window 1
 				-- class of UI elements --> {static text, text field, button, static text, text field, button, static text, text field, button, static text, text field, button, static text, text field, scroll area, pop up button, static text, pop up button, static text, button, button, button, toolbar, group}
-				-- name of pop up buttons --> {"De :", "Signature :"}
-				-- value of pop up buttons --> {"Yvan KOENIG – koenigyvan<at>mac<dot>com", "Aucune"}
-				if not (exists (pop up button 1 whose name is signature_loc)) then error "The “" & signature_loc & "” pop up is unavailable" number -128
+				-- name of pop up buttons --> {"De¬†:", "Signature¬†:"}
+				-- value of pop up buttons --> {"Yvan KOENIG ‚Äì koenigyvan<at>mac<dot>com", "Aucune"}
+				if not (exists (pop up button 1 whose name is signature_loc)) then error "The ‚Äú" & signature_loc & "‚Äù pop up is unavailable" number -128
 				tell scroll area 1
 					tell UI element 1
 						tell group 3
