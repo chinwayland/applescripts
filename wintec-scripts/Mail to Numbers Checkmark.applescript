@@ -3,9 +3,10 @@
 tell application "Mail"
 	
 	set emailAccounts to name of accounts # grab list of accounts
+	tell me to say "Select the account with the assignments you want to retrieve."
+	
 	set chosenAccount to choose from list emailAccounts with prompt "Please choose the mail account" # choose an account
 	set chosenAccount to item 1 of chosenAccount # flatten list to string
-	
 	
 	set accountMailboxes to name of mailboxes of account chosenAccount # grab list of mailboxes
 	tell me to say "Select the mailbox with the assignments you want to retrieve."
@@ -70,3 +71,6 @@ tell application "Numbers"
 		end tell
 	end tell
 end tell
+
+
+say "Finished"

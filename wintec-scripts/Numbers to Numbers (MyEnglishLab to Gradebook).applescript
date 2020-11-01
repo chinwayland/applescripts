@@ -1,5 +1,6 @@
 -- This script will check the exported gradebook or multiple gradebook export from MyEnglishLab and check if the student has done the assignments. They will get a checkmark for each assignment done. The MyEnglishLab Username has to be in the gradebook for this to work. does not yet work for unit progress tests and video activities
 
+set skip to {"---", "0%"}
 tell application "Numbers"
 	tell me to say "Where is the gradebook report from MyEnglishLab?"
 	set sourceFile to id of (open (choose file with prompt "Source File"))
@@ -18,7 +19,7 @@ tell application "Numbers"
 		set chosenUnit to item 1 of chosenUnit # flattens the list to a string
 		if chosenUnit is "Assignments VIDEO ACTIVITIES" then
 			tell me to say "How many video units do you want to import?"
-			# ask user to choose which video unit
+			# ask user to choose how many video units
 			set videoUnitList to {}
 			repeat with i from 1 to 14
 				set end of videoUnitList to i
@@ -26,6 +27,7 @@ tell application "Numbers"
 			set chosenVideoUnits to choose from list videoUnitList with prompt "Choose how many video actibvity units to import"
 			set chosenVideoUnits to item 1 of chosenVideoUnits # flatten list
 		end if
+		
 		tell sheet chosenUnit
 			tell table 1
 				
@@ -77,7 +79,8 @@ tell application "Numbers"
 					if value of cell scoreRowAddress of column i contains "Score" then
 						
 						if chosenUnit is "Assignments VIDEO ACTIVITIES" then
-							set unitName to value of cell 2 of column i
+							# set unitName to value of cell 2 of column i
+							set unitName to "VIDEO"
 							set unitName2 to value of cell 3 of column i
 							
 							if item 2 of words of unitName2 > chosenVideoUnits then
@@ -85,6 +88,11 @@ tell application "Numbers"
 							end if
 							
 							set end of columnHeaderNames to "MEL " & unitName & " " & text 1 through ((offset of ":" in unitName2) + 1) of unitName2 & value of cell 4 of column i
+							
+						else if chosenUnit contains "test" then
+							set unitName to value of cell 2 of column i
+							set end of columnHeaderNames to "MEL " & unitName
+							
 						else
 							set unitName to value of cell 2 of column i
 							set end of columnHeaderNames to "MEL " & text 1 through ((offset of ":" in unitName) + 1) of unitName & " " & value of cell 4 of column i
@@ -94,11 +102,10 @@ tell application "Numbers"
 						
 						set loopCounter to loopCounter + 1
 						repeat with j from (startOfClassInfoRowAddress + 1) to (endOfClassInfoRowAddress - 1)
-							if value of cell j of column i is not "---" then
+							if value of cell j of column i is not in skip then
 								set end of scores to {value of cell j of column 2, item loopCounter of columnHeaderNames, value of cell j of column i}
 							end if
 						end repeat
-						
 					end if
 				end repeat
 			end tell
@@ -162,7 +169,13 @@ tell application "Numbers"
 					end tell
 					tell column columnCoordinate
 						tell cell rowCoordinate
-							set value to true
+							if chosenUnit contains "TEST" then
+								set format to percent
+								set value to item 3 of item i of scores
+							else
+								set value to true
+							end if
+							
 						end tell
 					end tell
 					

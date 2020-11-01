@@ -1,4 +1,4 @@
---This script will open the list of Zoom cloud recordings in Safari and then turn them all on or off, depending on your choice
+-- This script will open the list of Zoom cloud recordings in Safari and then turn them all on or off, depending on your choice
 
 set videoShareGoalList to {"On", "Off"}
 set videoShareGoal to choose from list videoShareGoalList with prompt "Do you want the videos On (Shared) or Off (Unshared)?" default items {"Off"}
