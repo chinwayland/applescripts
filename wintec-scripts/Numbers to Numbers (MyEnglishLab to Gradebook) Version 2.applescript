@@ -135,15 +135,16 @@ tell application "Numbers"
 		tell sheet 1
 			tell table 1
 				# Check if Unit already has been imported, if not add columns
-				if value of cells of row 1 contains item 1 of columnHeaderNames then
-					# Update Cells
-				else
-					repeat with i from 1 to count of columnHeaderNames
+				repeat with h from 1 to count of columnHeaderNames
+					if value of cells of row 1 contains item h of columnHeaderNames then
+						# Update Cells
+					else
 						add column after last column
 						set the format of the last column to checkbox
-						set the value of the first cell of the last column to item i of columnHeaderNames
-					end repeat
-				end if
+						set the value of the first cell of the last column to item h of columnHeaderNames
+					end if
+				end repeat
+				
 				
 				# get column where the usernames are				
 				tell row 1
