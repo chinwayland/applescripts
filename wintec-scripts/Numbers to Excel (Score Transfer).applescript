@@ -5,8 +5,11 @@ set chosenTest to choose from list (tests) with prompt "Please choose the test y
 set chosenTest to item 1 of chosenTest
 set scoreData to {}
 tell application "Numbers"
-	set sourceFile to id of (open (choose file with prompt "Source File"))
-	tell document id sourceFile
+	set openDocuments to name of documents
+	set sourceFile to choose from list openDocuments with prompt "What is the source file?"
+	set sourceFile to item 1 of sourceFile
+	#set sourceFile to id of (open (choose file with prompt "Source File"))
+	tell document sourceFile
 		set excelSheetName to name
 		tell sheet 1
 			tell table 1
@@ -31,8 +34,12 @@ end tell
 
 tell application "Microsoft Excel"
 	activate
+	set openDocuments to name of documents
+	set targetFile to choose from list openDocuments with prompt "Choose target file."
+	set targetFile to item 1 of targetFile
+	
 	#set targetFile to id of (open (choose file with prompt "Target File"))
-	tell workbook 1
+	tell workbook targetFile
 		repeat with i from 1 to count of worksheets
 			try
 				tell worksheet i

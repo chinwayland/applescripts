@@ -1,13 +1,13 @@
 -- This script checks a mailbox for messages and email addresses and then checks a box in the corresponding cell in a Numbers document
 
 tell application "Mail"
-	
+	(*
 	set emailAccounts to name of accounts # grab list of accounts
 	tell me to say "Select the account with the assignments you want to retrieve."
-	
 	set chosenAccount to choose from list emailAccounts with prompt "Please choose the mail account" # choose an account
 	set chosenAccount to item 1 of chosenAccount # flatten list to string
-	
+	*)
+	set chosenAccount to "Wintec"
 	set accountMailboxes to name of mailboxes of account chosenAccount # grab list of mailboxes
 	tell me to say "Select the mailbox with the assignments you want to retrieve."
 	set chosenMailbox to choose from list accountMailboxes with prompt "Please select the mailbox with the emails you want to process." # choose a mailbox
@@ -24,9 +24,12 @@ end tell
 tell application "Numbers"
 	activate
 	tell me to say "Select the gradebook that you want to transfer data to"
-	set targetFile to id of (open (choose file with prompt "Target File"))
+	set openDocuments to name of documents
+	set targetFile to choose from list openDocuments with prompt "Select Target File."
+	set targetFile to item 1 of targetFile
+	#	set targetFile to id of (open (choose file with prompt "Target File"))
 	tell me to say "transfering data"
-	tell document id targetFile
+	tell document targetFile
 		tell sheet 1
 			tell table 1
 				set rowData to value of cells of row 1

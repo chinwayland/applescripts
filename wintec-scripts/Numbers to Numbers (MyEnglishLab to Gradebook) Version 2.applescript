@@ -49,7 +49,7 @@ tell application "Numbers"
 				tell column 1
 					set classNames to {}
 					repeat with i from 1 to count of cells
-						if value of cell i contains "Sept 2020" then
+						if value of cell i contains "2020" then
 							set end of classNames to value of cell i
 						end if
 					end repeat
