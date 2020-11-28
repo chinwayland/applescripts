@@ -63,9 +63,13 @@ tell application "Numbers"
 					end tell
 				end repeat
 				set emailsThatDoNotMatch to {}
+				set gradedLoopCounter to 0
 				repeat with email in listOfEmails
 					if email is in gradebookEmails then
-						set the value of the cell (address of row of (first cell whose value is email)) of columnToUpdate to true
+						if the value of the cell (address of row of (first cell whose value is email)) of columnToUpdate is false then
+							set the value of the cell (address of row of (first cell whose value is email)) of columnToUpdate to true
+							set gradedLoopCounter to gradedLoopCounter + 1
+						end if
 					else
 						set end of emailsThatDoNotMatch to email
 					end if
@@ -75,5 +79,4 @@ tell application "Numbers"
 	end tell
 end tell
 
-
-say "Finished"
+say "finshed and checked " & gradedLoopCounter & " checkboxes"

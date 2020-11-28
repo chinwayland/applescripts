@@ -1,7 +1,11 @@
 -- This script will extract the first names from a padlet page
 
 tell application "Safari"
-	tell document 1
+	set openTabs to name of tabs of window 1
+	set padletTab to choose from list openTabs with prompt "Select Padlet Page"
+	set padletTab to item 1 of padletTab
+	tell tab padletTab of window 1
+		
 		set numberOfPosts to do JavaScript "document.getElementsByClassName('accessibility oob').length"
 		set names to {}
 		repeat with i from 0 to numberOfPosts - 1

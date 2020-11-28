@@ -175,7 +175,7 @@ tell application "Numbers"
 					end repeat
 				end repeat
 				*)
-				
+				set changedGradeCounter to 0
 				repeat with i from 1 to count of scores # loop through scores import
 					tell column usernameColumnAddress
 						set rowCoordinate to address of row of (first cell whose value of it is item 1 of item i of scores)
@@ -188,8 +188,12 @@ tell application "Numbers"
 							if chosenUnit contains "TEST" then
 								set format to percent
 								set value to item 3 of item i of scores
+								set changedGradeCounter to changedGradeCounter + 1
 							else
-								set value to true
+								if value is false then
+									set value to true
+									set changedGradeCounter to changedGradeCounter + 1
+								end if
 							end if
 						end tell
 					end tell
@@ -199,3 +203,4 @@ tell application "Numbers"
 	end tell
 end tell
 say "Finished"
+say "checked " & changedGradeCounter & " checkboxes"
