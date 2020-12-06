@@ -9,6 +9,7 @@ tell application "Numbers"
 	set sourceFile to choose from list openDocuments with prompt "What is the source file?"
 	set sourceFile to item 1 of sourceFile
 	#set sourceFile to id of (open (choose file with prompt "Source File"))
+	tell me to say "Grabbing data"
 	tell document sourceFile
 		set excelSheetName to name
 		tell sheet 1
@@ -37,7 +38,7 @@ tell application "Microsoft Excel"
 	set openDocuments to name of documents
 	set targetFile to choose from list openDocuments with prompt "Choose target file."
 	set targetFile to item 1 of targetFile
-	
+	tell me to say "pasting data"
 	#set targetFile to id of (open (choose file with prompt "Target File"))
 	tell workbook targetFile
 		repeat with i from 1 to count of worksheets
@@ -58,3 +59,5 @@ tell application "Microsoft Excel"
 		end tell
 	end tell
 end tell
+
+say "Finished"
