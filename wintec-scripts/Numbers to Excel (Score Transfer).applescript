@@ -25,7 +25,7 @@ tell application "Numbers"
 						set testScoreColumn to column i
 					end if
 				end repeat
-				repeat with i from 2 to (count of cells of studentIDColumn) - 1
+				repeat with i from 2 to (count of cells of studentIDColumn)
 					set end of scoreData to {value of cell i of studentIDColumn, value of cell i of testScoreColumn}
 				end repeat
 			end tell
