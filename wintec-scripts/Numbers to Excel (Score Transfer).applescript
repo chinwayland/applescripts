@@ -6,6 +6,7 @@ set chosenTest to item 1 of chosenTest
 set scoreData to {}
 tell application "Numbers"
 	set openDocuments to name of documents
+	tell me to say "what is the source file?"
 	set sourceFile to choose from list openDocuments with prompt "What is the source file?"
 	set sourceFile to item 1 of sourceFile
 	#set sourceFile to id of (open (choose file with prompt "Source File"))
@@ -36,6 +37,7 @@ end tell
 tell application "Microsoft Excel"
 	activate
 	set openDocuments to name of documents
+	tell me to say "what is the target file?"
 	set targetFile to choose from list openDocuments with prompt "Choose target file."
 	set targetFile to item 1 of targetFile
 	tell me to say "pasting data"

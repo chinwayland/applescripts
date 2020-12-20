@@ -9,8 +9,8 @@ tell application "Mail"
 	*)
 	set chosenAccount to "Wintec"
 	set accountMailboxes to name of mailboxes of account chosenAccount # grab list of mailboxes
-	tell me to say "Select the mailbox with the assignments you want to retrieve."
-	set chosenMailbox to choose from list accountMailboxes with prompt "Please select the mailbox with the emails you want to process." # choose a mailbox
+	tell me to say "Select the mailbox"
+	set chosenMailbox to choose from list accountMailboxes with prompt "Please select the mailbox" # choose a mailbox
 	set chosenMailbox to item 1 of chosenMailbox # flatten list to string
 	set chosenMailboxAndAccount to mailbox chosenMailbox of account "Wintec" #chosenAccount # combine mailbox and account into one variable
 	tell me to say "Grabbing Data"
@@ -23,7 +23,7 @@ end tell
 
 tell application "Numbers"
 	activate
-	tell me to say "Select the gradebook that you want to transfer data to"
+	tell me to say "Select the gradebook"
 	set openDocuments to name of documents
 	set targetFile to choose from list openDocuments with prompt "Select Target File."
 	set targetFile to item 1 of targetFile
