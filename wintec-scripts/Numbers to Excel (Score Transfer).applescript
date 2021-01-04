@@ -1,13 +1,13 @@
 -- This script transfers a score from a Numbers Document to an Excel Workbook
 
-set tests to {"Progress Test #1", "Progress Test #2", "Progress Test #3", "Participation (out of 10)", "Speaking Exam", "Written Exam", "Final Exam Score"}
-set chosenTest to choose from list (tests) with prompt "Please choose the test you are transfering data for"
+set tests to {"English Name", "Progress Test #1", "Progress Test #2", "Progress Test #3", "Participation (out of 10)", "Speaking Exam", "Written Exam", "Final Exam Score"}
+set chosenTest to choose from list (tests) with prompt "Please choose the data you are transfering data for"
 set chosenTest to item 1 of chosenTest
 set scoreData to {}
 tell application "Numbers"
 	set openDocuments to name of documents
 	tell me to say "what is the source file?"
-	set sourceFile to choose from list openDocuments with prompt "What is the source file?"
+	set sourceFile to choose from list openDocuments with prompt "Select the source file."
 	set sourceFile to item 1 of sourceFile
 	#set sourceFile to id of (open (choose file with prompt "Source File"))
 	tell me to say "Grabbing data"
@@ -37,7 +37,7 @@ end tell
 tell application "Microsoft Excel"
 	activate
 	set openDocuments to name of documents
-	tell me to say "what is the target file?"
+	tell me to say "Select the target file."
 	set targetFile to choose from list openDocuments with prompt "Choose target file."
 	set targetFile to item 1 of targetFile
 	tell me to say "pasting data"

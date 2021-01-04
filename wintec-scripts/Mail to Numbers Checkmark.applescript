@@ -1,6 +1,7 @@
 -- This script checks a mailbox for messages and email addresses and then checks a box in the corresponding cell in a Numbers document
 
 tell application "Mail"
+	activate
 	(*
 	set emailAccounts to name of accounts # grab list of accounts
 	tell me to say "Select the account with the assignments you want to retrieve."
