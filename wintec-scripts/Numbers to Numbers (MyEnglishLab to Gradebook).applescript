@@ -118,7 +118,7 @@ tell application "Numbers"
 						set loopCounter to loopCounter + 1
 						repeat with j from (startOfClassInfoRowAddress + 1) to (endOfClassInfoRowAddress - 1)
 							if value of cell j of column i is not in skip then
-								set end of scores to {value of cell j of column 2, item loopCounter of columnHeaderNames, value of cell j of column i}
+							set end of scores to {value of cell j of column 2, item loopCounter of columnHeaderNames, value of cell j of column i}
 							end if
 						end repeat
 					end if
