@@ -1,5 +1,4 @@
-use AppleScript version "2.4" -- Yosemite (10.10) or later
-use scripting additions
+-- This script converts an Excel timetable to Apple Calendar. Must open the excel timetable in Numbers first, then run this script
 
 tell application "Numbers"
 	set listOfDocuments to name of documents
