@@ -1,4 +1,8 @@
 -- This script converts an Excel timetable to Apple Calendar. Must open the excel timetable in Numbers first, then run this script
+set timeZones to {-12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14}
+
+set chosenTimeZone to choose from list timeZones with prompt "Choose your local UTC Time Zone (8 for China)"
+set chosenTimeZone to item 1 of chosenTimeZone
 
 tell application "Numbers"
 	activate
@@ -17,21 +21,6 @@ tell application "Numbers"
 				repeat with i from rowNumber + 1 to rowCount
 					set end of roomNumbers to {(value of cell i of column (columnNumber - 1)), value of cell i of column columnNumber}
 				end repeat
-				(*
-				set yearName to value of cell 2 of column "M"
-				set fullClassName to {}
-				repeat with i from 4 to 21
-					set className to value of cell i of column "M"
-					set teacherName to value of cell i of column "O"
-					set end of fullClassName to yearName & " " & className & " " & teacherName
-				end repeat
-				set yearName to value of cell 23 of column "M"
-				repeat with i from 25 to 41
-					set className to value of cell i of column "M"
-					set teacherName to value of cell i of column "O"
-					set end of fullClassName to yearName & " " & className & " " & teacherName
-				end repeat
-				*)
 				
 				# Create name for all calendars Year X / Class / Teacher Name
 				
@@ -69,21 +58,14 @@ tell application "Numbers"
 						end if
 					end repeat
 				end repeat
-				
 			end tell
 		end tell
 	end tell
 end tell
 
-# get rid of chinese character fro day
-set lessons2 to {}
-repeat with lesson in lessons
-	set end of lessons2 to {do shell script "echo " & quoted form of item 1 of lesson & " | tr -dc '[:alnum:]' | tr '[:upper:]' '[:lower:]'", item 2 of lesson, item 3 of lesson, item 4 of lesson}
-end repeat
-
 # convert year 1 or year 2 from chinese to english
 set lessons3 to {}
-repeat with lesson in lessons2
+repeat with lesson in lessons
 	if item 2 of lesson contains "大一" then
 		set end of lessons3 to {item 1 of lesson, "Year 1", item 3 of lesson, item 4 of lesson}
 	else
@@ -109,27 +91,25 @@ repeat with lesson in lessons3
 	end if
 end repeat
 
-# capitalize day of week, combine Year, class, and teacher name
+# Combine Year, class, and teacher name
 set lessons5 to {}
 repeat with lesson in lessons4
-	set UpperFirstCharString to do shell script "echo " & character 1 of item 1 of lesson & " | tr [:lower:] [:upper:]"
-	set theString to UpperFirstCharString & characters 2 through -1 of item 1 of lesson
-	set end of lessons5 to {item 2 of lesson & " " & item 4 of lesson, theString, item 3 of lesson}
+	set end of lessons5 to {item 2 of lesson & " " & item 4 of lesson, item 1 of lesson, item 3 of lesson}
 end repeat
 
 # add date to each item in the list
 set lessons6 to {}
 repeat with lesson in lessons5
-	if item 2 of lesson is "Monday" then
-		set end of lessons6 to {item 1 of lesson, item 2 of lesson & ", March 1, 2021 at " & item 3 of lesson}
-	else if item 2 of lesson is "Tuesday" then
-		set end of lessons6 to {item 1 of lesson, item 2 of lesson & ", March 2, 2021 at " & item 3 of lesson}
-	else if item 2 of lesson is "Wednesday" then
-		set end of lessons6 to {item 1 of lesson, item 2 of lesson & ", March 3, 2021 at " & item 3 of lesson}
-	else if item 2 of lesson is "Thursday" then
-		set end of lessons6 to {item 1 of lesson, item 2 of lesson & ", March 4, 2021 at " & item 3 of lesson}
-	else if item 2 of lesson is "Friday" then
-		set end of lessons6 to {item 1 of lesson, item 2 of lesson & ", March 5, 2021 at " & item 3 of lesson}
+	if item 2 of lesson contains "Monday" then
+		set end of lessons6 to {item 1 of lesson, "March 1, 2021 at " & item 3 of lesson}
+	else if item 2 of lesson contains "Tuesday" then
+		set end of lessons6 to {item 1 of lesson, "March 2, 2021 at " & item 3 of lesson}
+	else if item 2 of lesson contains "Wednesday" then
+		set end of lessons6 to {item 1 of lesson, "March 3, 2021 at " & item 3 of lesson}
+	else if item 2 of lesson contains "Thursday" then
+		set end of lessons6 to {item 1 of lesson, "March 4, 2021 at " & item 3 of lesson}
+	else if item 2 of lesson contains "Friday" then
+		set end of lessons6 to {item 1 of lesson, "March 5, 2021 at " & item 3 of lesson}
 	end if
 end repeat
 
@@ -151,30 +131,44 @@ repeat with lesson in lessons7
 	end repeat
 end repeat
 
-(*
+# Adjust for local time zone
+set lessons9 to {}
+repeat with lesson in lessons8
+	set end of lessons9 to {item 1 of lesson, (item 2 of lesson) + (hours * chosenTimeZone) - (hours * 8), item 3 of lesson}
+end repeat
+
+# add calendars and events to the Calendar app
 tell application "Calendar"
 	activate
-	repeat with i from 1 to count of fullClassName
-		if not (exists (calendar (item i of fullClassName))) then
-			create calendar with name item i of fullClassName
+	repeat with i from 1 to count of className
+		if not (exists (calendar (item i of className))) then
+			create calendar with name item i of className
 		end if
 	end repeat
 	
-	repeat with lesson in lessons8
-		tell calendar (item 1 of lesson)
-			make new event at end with properties {summary:item 1 of lesson, location:item 3 of lesson, start date:item 2 of lesson, end date:(item 2 of lesson) + (minutes * 80), recurrence:"FREQ=WEEKLY"}
-		end tell
+	repeat with lesson in lessons9
+		if calendar (item 1 of lesson) exists then
+			tell calendar (item 1 of lesson)
+				make new event at end with properties {summary:item 1 of lesson, location:item 3 of lesson, start date:item 2 of lesson, end date:(item 2 of lesson) + (minutes * 80), recurrence:"FREQ=WEEKLY"}
+			end tell
+		else
+			set problem to words of item 1 of lesson
+			set newEventSummary to item 1 of problem & " " & item 2 of problem & " " & item 3 of problem & " " & item 4 of problem
+			tell calendar newEventSummary
+				make new event at end with properties {summary:item 1 of lesson, location:item 3 of lesson, start date:item 2 of lesson, end date:(item 2 of lesson) + (minutes * 80), recurrence:"FREQ=WEEKLY"}
+			end tell
+		end if
 	end repeat
 end tell
-*)
+
 (*
+# Add calendars and events to the outlook app
 tell application "Microsoft Outlook"
 	activate
 	repeat with i from 1 to count of fullClassName
 		make new calendar with properties {name:item i of fullClassName}
 	end repeat
 	repeat with lesson in lessons8
-		
 	end
 end tell
 *)
