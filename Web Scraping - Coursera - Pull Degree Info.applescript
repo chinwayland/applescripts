@@ -1,58 +1,33 @@
--- This script grabs all the data about degree from coursera and puts them into a Numbers spreadsheet
-
-set degreeName to {}
-set partnerName to {}
-set tuition to {}
-set lengthOfCourse to {}
-set hoursPerWeek to {}
-set numberOfCourses to {}
+use AppleScript version "2.4" -- Yosemite (10.10) or later
+use scripting additions
 
 tell application "Safari"
-	make new document
+	activate
 	tell document 1
-		set URL to "https://www.coursera.org/degrees/"
+		set numOfSchools to do JavaScript "document.getElementsByClassName('font-md font-weight-bold d-block').length"
+		set university to {}
+		repeat with i from 0 to numOfSchools - 1
+			set degreeType to do JavaScript "document.getElementsByClassName('font-md font-weight-bold d-block')[" & i & "].textContent"
+			set universityName to do JavaScript "document.getElementsByClassName('font-sm m-b-0 d-block')[" & i & "].textContent"
+			set duration to do JavaScript "document.getElementsByClassName('program-details font-weight-bold m-t-1s m-b-0')[" & i & "].textContent"
+			set ranking to do JavaScript "document.getElementsByClassName('ranking-description font-sm d-block m-t-1s')[" & i & "].textContent"
+			set end of university to {degreeType, universityName, duration, ranking}
+		end repeat
 	end tell
 end tell
 
 tell application "Numbers"
-	make new document
-end tell
-
-display dialog "Page loaded yet?"
-
-repeat with i from 0 to 20
-	tell application "Safari"
-		activate
-		tell document 1
-			do JavaScript "document.getElementsByClassName('_ftgvbcw')[" & i & "].firstChild.firstChild.click()"
-			delay 5
-			set end of degreeName to do JavaScript "document.getElementsByClassName('page-title')[0].textContent"
-			set end of partnerName to do JavaScript "document.getElementsByClassName('partner-name')[0].textContent"
-			set end of tuition to do JavaScript "document.getElementsByClassName('feature-title')[0].textContent"
-			set end of lengthOfCourse to do JavaScript "document.getElementsByClassName('feature-title')[1].textContent"
-			set end of hoursPerWeek to do JavaScript "document.getElementsByClassName('feature-description')[1].childNodes[1].firstChild.textContent"
-			set end of numberOfCourses to do JavaScript "document.getElementsByClassName('feature-title')[2].textContent"
-			say "Collected information from school " & i + 1
-			do JavaScript "window.history.back()"
-			delay 5
-		end tell
-	end tell
-	
-	tell application "Numbers"
-		activate
-		tell document 1
-			tell sheet 1
-				tell table 1
-					tell row (i + 2)
-						set value of cell 1 to item (i + 1) of degreeName
-						set value of cell 2 to item (i + 1) of partnerName
-						set value of cell 3 to item (i + 1) of tuition
-						set value of cell 4 to item (i + 1) of lengthOfCourse
-						set value of cell 5 to item (i + 1) of hoursPerWeek
-						set value of cell 6 to item (i + 1) of numberOfCourses
-					end tell
-				end tell
+	activate
+	tell document 1
+		tell sheet 1
+			tell table 1
+				repeat with i from 1 to count of university
+					set value of cell (i + 1) of column 1 to item 1 of item i of university
+					set value of cell (i + 1) of column 2 to item 2 of item i of university
+					set value of cell (i + 1) of column 3 to item 3 of item i of university
+					set value of cell (i + 1) of column 4 to item 4 of item i of university
+				end repeat
 			end tell
 		end tell
 	end tell
-end repeat
+end tell

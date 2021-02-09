@@ -76,19 +76,14 @@ end repeat
 # add time to each event
 set lessons4 to {}
 repeat with lesson in lessons3
-	if item 3 of lesson contains "1-2节" then
-		set end of lessons4 to {item 1 of lesson, item 2 of lesson, "8:00:00 AM", item 4 of lesson}
-	else if item 3 of lesson contains "3-4节" then
-		set end of lessons4 to {item 1 of lesson, item 2 of lesson, "9:50:00 AM", item 4 of lesson}
-	else if item 3 of lesson contains "5-6节" then
-		set end of lessons4 to {item 1 of lesson, item 2 of lesson, "11:30:00 AM", item 4 of lesson}
-	else if item 3 of lesson contains "7-8节" then
-		set end of lessons4 to {item 1 of lesson, item 2 of lesson, "2:00:00 PM", item 4 of lesson}
-	else if item 3 of lesson contains "9-10节" then
-		set end of lessons4 to {item 1 of lesson, item 2 of lesson, "3:40 PM", item 4 of lesson}
-	else if item 3 of lesson contains "11-12节" then
-		set end of lessons4 to {item 1 of lesson, item 2 of lesson, "6:30 PM", item 4 of lesson}
+	set inputTime to item 3 of lesson
+	set theTime to word 4 of inputTime & ":" & word 5 of inputTime
+	if word 1 of the theTime as number > 12 then
+		set theTime2 to (word 1 of theTime) - 12 & ":" & word 2 of theTime & "PM" as text
+	else
+		set theTime2 to word 1 of theTime & ":" & word 2 of theTime & "AM" as text
 	end if
+	set end of lessons4 to {item 1 of lesson, item 2 of lesson, theTime2, item 4 of lesson}
 end repeat
 
 # Combine Year, class, and teacher name
