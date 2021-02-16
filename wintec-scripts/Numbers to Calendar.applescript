@@ -19,7 +19,7 @@ tell application "Numbers"
 				set rowCount to count of cells in column columnNumber
 				set roomNumbers to {}
 				repeat with i from rowNumber + 1 to rowCount
-					set end of roomNumbers to {(value of cell i of column (columnNumber - 1)), value of cell i of column columnNumber}
+					set end of roomNumbers to {(value of cell i of column (columnNumber - 1)), value of cell i of column columnNumber as text}
 				end repeat
 				
 				# Create name for all calendars Year X / Class / Teacher Name
@@ -156,14 +156,35 @@ tell application "Calendar"
 	end repeat
 end tell
 
+
 (*
-# Add calendars and events to the outlook app
+# Outlook --> Incomplete code, needs repeat function
+# Creates all the events on the first day but does not repeat
+# make new calendar event with properties {subject:"Test", location:"1000", start time:startTime, end time:endTime, has reminder:false, recurrence:{start date:startTime, end date:endDate, recurrence type:"weekly", occurrence interval:1, days of week:{monday:true}}}
 tell application "Microsoft Outlook"
 	activate
-	repeat with i from 1 to count of fullClassName
-		make new calendar with properties {name:item i of fullClassName}
-	end repeat
-	repeat with lesson in lessons8
-	end
+	set wintecCalendar to first calendar whose email address of accounts contains "wintec"
+	tell wintecCalendar
+		
+		repeat with i from 1 to count of className
+			if not (exists (calendar (item i of className))) then
+				make new calendar with properties {name:item i of className}
+			end if
+		end repeat
+		
+		repeat with lesson in lessons9
+			if calendar (item 1 of lesson) exists then
+				tell calendar (item 1 of lesson)
+					make new calendar event with properties {subject:item 1 of lesson, location:item 3 of lesson, start time:item 2 of lesson, end time:(item 2 of lesson) + (minutes * 80), has reminder:false}
+				end tell
+			else
+				set problem to words of item 1 of lesson
+				set newEventSummary to item 1 of problem & " " & item 2 of problem & " " & item 3 of problem & " " & item 4 of problem
+				tell calendar newEventSummary
+					make new calendar event with properties {subject:item 1 of lesson, location:item 3 of lesson, start time:item 2 of lesson, end time:(item 2 of lesson) + (minutes * 80), has reminder:false}
+				end tell
+			end if
+		end repeat
+	end tell
 end tell
 *)
