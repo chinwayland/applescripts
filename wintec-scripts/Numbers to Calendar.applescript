@@ -6,7 +6,7 @@
 
 -- Asks for the last day of the semester to know when to stop repeating events
 
-display dialog "Temporarliy change the time zone on your computer to the Chinese time zone before running this script"
+display dialog "Temporarliy change the time zone on your computer to the Chinese time zone before running this script. This script will first delete any calendars that contain the word 'Year' in the calendar name."
 
 repeat
 	set theCurrentDate to current date
@@ -25,12 +25,12 @@ end repeat
 display dialog "The last day of the semester is: " default answer (date string of theDate & space & time string of theDate)
 
 
-#set theDate to date "Wednesday, July 7, 2021 at 12:00:00 AM"
+set theDate to theDate + (days * 1)
 
 set a to (year of theDate)
 set b to (month of theDate) as number
 set c to day of theDate
-set d to "T000000Z"
+#set d to "T000000Z"
 set e to "FREQ=WEEKLY;INTERVAL=1;BYDAY=;UNTIL="
 
 set theList to {a, b, c}
@@ -40,7 +40,7 @@ set theListAsString to theList as text
 set text item delimiters to TID
 
 
-set theList to {e, theListAsString, d}
+set theList to {e, theListAsString}
 
 set {TID, text item delimiters} to {text item delimiters, ""}
 set endOfRecurrence to theList as text
@@ -61,6 +61,7 @@ tell application "Numbers"
 				set rowCount to count of cells in column columnNumber
 				set roomNumbers to {}
 				repeat with i from rowNumber + 1 to rowCount
+					
 					set end of roomNumbers to {(value of cell i of column (columnNumber - 1)), value of cell i of column columnNumber as text}
 				end repeat
 				
@@ -169,10 +170,19 @@ repeat with lesson in lessons7
 end repeat
 
 # Adjust for local time zone
-set lessons9 to {}
-repeat with lesson in lessons8
-	set end of lessons9 to {item 1 of lesson, (item 2 of lesson), item 3 of lesson}
-end repeat
+#set lessons9 to {}
+#repeat with lesson in lessons8
+#	set end of lessons9 to {item 1 of lesson, (item 2 of lesson), item 3 of lesson}
+#end repeat
+
+-- Deletes previous work calendars
+tell application "Calendar"
+	activate
+	tell (calendars whose name contains "Year")
+		delete
+	end tell
+end tell
+
 
 # add calendars and events to the Calendar app
 tell application "Calendar"
@@ -183,7 +193,7 @@ tell application "Calendar"
 		end if
 	end repeat
 	
-	repeat with lesson in lessons9
+	repeat with lesson in lessons8
 		if calendar (item 1 of lesson) exists then
 			tell calendar (item 1 of lesson)
 				make new event with properties {summary:item 1 of lesson, location:item 3 of lesson, start date:item 2 of lesson, end date:(item 2 of lesson) + (minutes * 80), recurrence:endOfRecurrence}
