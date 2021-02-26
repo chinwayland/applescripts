@@ -25,7 +25,9 @@ tell application "System Events"
 			# Click Export from Menu
 			tell menu item 1 of menu of menu item "Export" of menu "File" of menu bar 1
 				click
-				delay 3
+				delay 2
+				keystroke "d" using command down
+				delay 2
 			end tell
 			
 			# Click Export Button from pop up window

@@ -241,7 +241,9 @@ tell application "Microsoft Outlook"
 end tell
 *)
 
+
 # Export all generated calendars to the Desktop
+# Exports the calendars to ics files to the Desktop *** --> No longer needed
 
 set numberOfCalendars to (count of className) + 1
 
@@ -249,6 +251,7 @@ tell application "Calendar"
 	activate
 end tell
 
+(*
 tell application "System Events"
 	tell process "Calendar"
 		repeat with i from 2 to numberOfCalendars
@@ -262,7 +265,9 @@ tell application "System Events"
 			# Click Export from Menu
 			tell menu item 1 of menu of menu item "Export" of menu "File" of menu bar 1
 				click
-				delay 3
+				delay 2
+				keystroke "d" using command down
+				delay 2
 			end tell
 			
 			# Click Export Button from pop up window
@@ -281,3 +286,4 @@ tell application "System Events"
 		end repeat
 	end tell
 end tell
+*)
