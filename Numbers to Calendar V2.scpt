@@ -1,6 +1,26 @@
+use AppleScript version "2.4" -- Yosemite (10.10) or later
+use scripting additions
+
 -- This script converts an Excel timetable to Apple Calendar. Must open the excel timetable in Numbers first, then run this script
 
 display dialog "This script will first delete any calendars that contain the word 'Year' in the calendar name."
+
+repeat
+	set theCurrentDate to current date
+	display dialog "When is the first day of the semester? (Should be on a Monday, you can enter a delayed start day later)" default answer (date string of theCurrentDate & space & time string of theCurrentDate)
+	set theText to text returned of result
+	try
+		if theText is not "" then
+			set firstDay to date theText -- a date object
+			exit repeat
+		end if
+	on error
+		beep
+	end try
+end repeat
+
+display dialog "The first day of the semester is: " default answer (date string of firstDay & space & time string of firstDay)
+
 
 set chosenCalendarApp to choose from list {"Apple Calendar", "Microsoft Outlook"} with prompt "Which calendar app do you want the calendars created in?"
 set chosenCalendarApp to item 1 of chosenCalendarApp
@@ -50,8 +70,12 @@ tell application "Numbers"
 	set listOfDocuments to name of documents
 	set chosenDocument to choose from list listOfDocuments
 	set chosenDocument to item 1 of chosenDocument
+	
 	tell document chosenDocument
-		tell sheet 1
+		set listOfSheets to name of sheets
+		set chosenSheet to choose from list listOfSheets
+		set chosenSheet to item 1 of chosenSheet
+		tell sheet chosenSheet
 			tell table 1
 				# Find table of room numbers and teachers and put it into a list
 				set roomIndex to first cell whose value is "Room"
@@ -138,15 +162,15 @@ end repeat
 set lessons6 to {}
 repeat with lesson in lessons5
 	if item 2 of lesson contains "Monday" then
-		set end of lessons6 to {item 1 of lesson, "March 1, 2021 at " & item 3 of lesson}
+		set end of lessons6 to {item 1 of lesson, date string of firstDay & " at " & item 3 of lesson}
 	else if item 2 of lesson contains "Tuesday" then
-		set end of lessons6 to {item 1 of lesson, "March 2, 2021 at " & item 3 of lesson}
+		set end of lessons6 to {item 1 of lesson, date string of (firstDay + (days * 1)) & " at " & item 3 of lesson}
 	else if item 2 of lesson contains "Wednesday" then
-		set end of lessons6 to {item 1 of lesson, "March 3, 2021 at " & item 3 of lesson}
+		set end of lessons6 to {item 1 of lesson, date string of (firstDay + (days * 2)) & " at " & item 3 of lesson}
 	else if item 2 of lesson contains "Thursday" then
-		set end of lessons6 to {item 1 of lesson, "March 4, 2021 at " & item 3 of lesson}
+		set end of lessons6 to {item 1 of lesson, date string of (firstDay + (days * 3)) & " at " & item 3 of lesson}
 	else if item 2 of lesson contains "Friday" then
-		set end of lessons6 to {item 1 of lesson, "March 5, 2021 at " & item 3 of lesson}
+		set end of lessons6 to {item 1 of lesson, date string of (firstDay + (days * 4)) & " at " & item 3 of lesson}
 	end if
 end repeat
 
