@@ -1,10 +1,35 @@
+use AppleScript version "2.4" -- Yosemite (10.10) or later
+use scripting additions
+use script "CalendarLib EC" version "1.1.5" -- put this at the top of your scripts
+
 -- This script converts an Excel timetable to Apple Calendar. Must open the excel timetable in Numbers first, then run this script
 
+say "This script will first delete any calendars that contain the word 'Year' in the calendar name."
 display dialog "This script will first delete any calendars that contain the word 'Year' in the calendar name."
 
+say "Which calendar to you want to create the events in? Apple Calendar or Microsoft Outlook?"
 set chosenCalendarApp to choose from list {"Apple Calendar", "Microsoft Outlook"} with prompt "Which calendar app do you want the calendars created in?"
 set chosenCalendarApp to item 1 of chosenCalendarApp
 
+say "When is the first day of the semester? (Should be on a Monday, you can enter a delayed start day later)"
+repeat
+	set theCurrentDate to current date
+	display dialog "When is the first day of the semester? (Should be on a Monday, you can enter a delayed start day later)" default answer (date string of theCurrentDate & space & time string of theCurrentDate)
+	set theText to text returned of result
+	try
+		if theText is not "" then
+			set firstDay to date theText -- a date object
+			exit repeat
+		end if
+	on error
+		beep
+	end try
+end repeat
+
+say "The first day of the semester is: " & firstDay & "Please Confirm"
+display dialog "The first day of the semester is: " default answer (date string of firstDay & space & time string of firstDay)
+
+say "When is the last day of the semester?"
 repeat
 	set theCurrentDate to current date
 	display dialog "When is the last day of the semester?" default answer (date string of theCurrentDate & space & time string of theCurrentDate)
@@ -19,6 +44,7 @@ repeat
 	end try
 end repeat
 
+say "The last day of the semester is: " & theDate & "Please Confirm."
 display dialog "The last day of the semester is: " default answer (date string of theDate & space & time string of theDate)
 
 
@@ -50,8 +76,12 @@ tell application "Numbers"
 	set listOfDocuments to name of documents
 	set chosenDocument to choose from list listOfDocuments
 	set chosenDocument to item 1 of chosenDocument
+	
 	tell document chosenDocument
-		tell sheet 1
+		set listOfSheets to name of sheets
+		set chosenSheet to choose from list listOfSheets
+		set chosenSheet to item 1 of chosenSheet
+		tell sheet chosenSheet
 			tell table 1
 				# Find table of room numbers and teachers and put it into a list
 				set roomIndex to first cell whose value is "Room"
@@ -138,15 +168,15 @@ end repeat
 set lessons6 to {}
 repeat with lesson in lessons5
 	if item 2 of lesson contains "Monday" then
-		set end of lessons6 to {item 1 of lesson, "March 1, 2021 at " & item 3 of lesson}
+		set end of lessons6 to {item 1 of lesson, date string of firstDay & " at " & item 3 of lesson}
 	else if item 2 of lesson contains "Tuesday" then
-		set end of lessons6 to {item 1 of lesson, "March 2, 2021 at " & item 3 of lesson}
+		set end of lessons6 to {item 1 of lesson, date string of (firstDay + (days * 1)) & " at " & item 3 of lesson}
 	else if item 2 of lesson contains "Wednesday" then
-		set end of lessons6 to {item 1 of lesson, "March 3, 2021 at " & item 3 of lesson}
+		set end of lessons6 to {item 1 of lesson, date string of (firstDay + (days * 2)) & " at " & item 3 of lesson}
 	else if item 2 of lesson contains "Thursday" then
-		set end of lessons6 to {item 1 of lesson, "March 4, 2021 at " & item 3 of lesson}
+		set end of lessons6 to {item 1 of lesson, date string of (firstDay + (days * 3)) & " at " & item 3 of lesson}
 	else if item 2 of lesson contains "Friday" then
-		set end of lessons6 to {item 1 of lesson, "March 5, 2021 at " & item 3 of lesson}
+		set end of lessons6 to {item 1 of lesson, date string of (firstDay + (days * 4)) & " at " & item 3 of lesson}
 	end if
 end repeat
 
@@ -203,6 +233,248 @@ if chosenCalendarApp is "Apple Calendar" then
 			end if
 		end repeat
 	end tell
+	
+	
+	-- Sets the time zone
+	
+	tell application "Calendar"
+		set theCalendars to name of calendars whose name contains "year"
+	end tell
+	
+	set theStore to fetch store
+	
+	set startDate to firstDay
+	set endDate to startDate + days * 5
+	
+	set theCalendars to fetch calendars theCalendars cal type list cal local event store theStore
+	
+	set theEvents to fetch events starting date startDate ending date endDate searching cals theCalendars event store theStore
+	
+	repeat with i from 1 to count of theEvents
+		set theNewEvent to modify zone event item i of theEvents time zone "Asia/Shanghai"
+		store event event theNewEvent event store theStore
+	end repeat
+	
+	
+	-- remove days because of delayed start
+	set theStore to fetch store
+	
+	set theCalendars to fetch calendars {} cal type list cal cloud event store theStore
+	set startingDate to date "Tuesday, March 2, 2021 at 5:00:00 AM"
+	set endingDate to date "Thursday, March 4, 2021 at 10:00:00 PM"
+	set theEvents to fetch events starting date startingDate ending date endingDate searching cals theCalendars event store theStore
+
+	
+	repeat with theEvent in theEvents
+		remove event event theEvent event store theStore without future events
+	end repeat
+	
+	# This turns off and on the iCloud Calendar in preferences so the calendars gets uploaded to the cloud
+	tell application "System Preferences"
+		activate
+		delay 3
+	end tell
+	
+	tell application "System Events"
+		tell process "System Preferences"
+			tell window 1
+				tell button 1
+					click
+					delay 3
+				end tell
+			end tell
+		end tell
+	end tell
+	
+	tell application "System Events"
+		tell process "System Preferences"
+			tell window 1
+				tell group 1
+					tell scroll area 1
+						tell table 1
+							tell row 5
+								tell UI element 1
+									tell UI element 1
+										click # turn off icloud for calendar
+										delay 5
+										click # turn on icloud for calendar
+										# This step uploads the calendars to iCloud
+										delay 60
+									end tell
+								end tell
+							end tell
+						end tell
+					end tell
+				end tell
+			end tell
+		end tell
+	end tell
+	
+	-- Publishes the Calendars as Public
+	
+	tell application "Calendar"
+		activate
+	end tell
+	
+	tell application "System Events"
+		tell process "Calendar"
+			keystroke "f" using command down
+			delay 2
+			keystroke tab
+			delay 2
+			key code 126 using {option down}
+			delay 2
+			
+			repeat with i from 1 to 35
+				key code 125
+				delay 2
+				tell menu bar 1
+					tell menu bar item "Edit"
+						tell menu "Edit"
+							click
+							delay 2
+							tell UI element 15
+								click
+								delay 2
+							end tell
+						end tell
+					end tell
+				end tell
+				
+				tell window 1
+					tell splitter group 1
+						tell splitter group 1
+							tell scroll area 1
+								tell outline 1
+									tell row (i + 2)
+										tell pop over 1
+											set shareCalendar to checkbox 1
+											set doneButton to button "Done"
+											click shareCalendar
+											delay 2
+											click doneButton
+											delay 2
+											keystroke tab
+											delay 2
+										end tell
+									end tell
+								end tell
+							end tell
+						end tell
+					end tell
+				end tell
+				
+				
+			end repeat
+		end tell
+	end tell
+	
+	tell application "Calendar"
+		activate
+	end tell
+	
+	set calendarURLs to {}
+	tell application "System Events"
+		tell process "Calendar"
+			keystroke "f" using command down
+			delay 2
+			keystroke tab
+			delay 2
+			key code 126 using {option down}
+			delay 2
+			
+			repeat with i from 1 to 35
+				key code 125
+				delay 2
+				keystroke "i" using command down
+				delay 2
+				tell window 1
+					tell sheet 1
+						set calendarName to value of text field 1
+						tell scroll area 1
+							tell text area 1
+								set theURL to value
+							end tell
+						end tell
+					end tell
+				end tell
+				keystroke return
+				delay 2
+				
+				
+				set end of calendarURLs to {calendarName, theURL}
+			end repeat
+		end tell
+	end tell
+	
+	-- Grabs the published calendars and writes the URLs to a numbers document
+	tell application "Calendar"
+		activate
+	end tell
+	
+	set calendarURLs to {}
+	tell application "System Events"
+		tell process "Calendar"
+			keystroke "f" using command down
+			delay 2
+			keystroke tab
+			delay 2
+			key code 126 using {option down}
+			delay 2
+			
+			repeat with i from 1 to 35
+				key code 125
+				delay 2
+				keystroke "i" using command down
+				delay 2
+				tell window 1
+					tell sheet 1
+						set calendarName to value of text field 1
+						tell scroll area 1
+							tell text area 1
+								set theURL to value
+							end tell
+						end tell
+					end tell
+				end tell
+				keystroke return
+				delay 2
+				
+				
+				set end of calendarURLs to {calendarName, theURL}
+			end repeat
+		end tell
+	end tell
+	
+	tell application "Numbers"
+		activate
+		make new document
+		tell document 1
+			tell sheet 1
+				tell table 1
+					tell row 1
+						set value of cell 1 to "Calendar Name"
+						set value of cell 2 to "URL"
+					end tell
+					
+					repeat with i from 1 to count of calendarURLs
+						set calendarName to item 1 of item i of calendarURLs
+						set theURL to item 2 of item i of calendarURLs
+						if not (exists row (i + 1)) then
+							make new row
+						end if
+						tell row (i + 1)
+							set value of cell 1 to calendarName
+							set value of cell 2 to theURL
+						end tell
+						
+					end repeat
+				end tell
+			end tell
+		end tell
+	end tell
+	
+	
 else
 	# Outlook --> Incomplete code, needs repeat function
 	# Creates all the events on the first day but does not repeat

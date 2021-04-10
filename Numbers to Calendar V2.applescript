@@ -1,10 +1,17 @@
 use AppleScript version "2.4" -- Yosemite (10.10) or later
 use scripting additions
+use script "CalendarLib EC" version "1.1.5" -- put this at the top of your scripts
 
 -- This script converts an Excel timetable to Apple Calendar. Must open the excel timetable in Numbers first, then run this script
 
+say "This script will first delete any calendars that contain the word 'Year' in the calendar name."
 display dialog "This script will first delete any calendars that contain the word 'Year' in the calendar name."
 
+say "Which calendar to you want to create the events in? Apple Calendar or Microsoft Outlook?"
+set chosenCalendarApp to choose from list {"Apple Calendar", "Microsoft Outlook"} with prompt "Which calendar app do you want the calendars created in?"
+set chosenCalendarApp to item 1 of chosenCalendarApp
+
+say "When is the first day of the semester? (Should be on a Monday, you can enter a delayed start day later)"
 repeat
 	set theCurrentDate to current date
 	display dialog "When is the first day of the semester? (Should be on a Monday, you can enter a delayed start day later)" default answer (date string of theCurrentDate & space & time string of theCurrentDate)
@@ -19,12 +26,10 @@ repeat
 	end try
 end repeat
 
+say "The first day of the semester is: " & firstDay
 display dialog "The first day of the semester is: " default answer (date string of firstDay & space & time string of firstDay)
 
-
-set chosenCalendarApp to choose from list {"Apple Calendar", "Microsoft Outlook"} with prompt "Which calendar app do you want the calendars created in?"
-set chosenCalendarApp to item 1 of chosenCalendarApp
-
+say "When is the last day of the semester?"
 repeat
 	set theCurrentDate to current date
 	display dialog "When is the last day of the semester?" default answer (date string of theCurrentDate & space & time string of theCurrentDate)
@@ -39,6 +44,7 @@ repeat
 	end try
 end repeat
 
+say "The last day of the semester is: " & theDate
 display dialog "The last day of the semester is: " default answer (date string of theDate & space & time string of theDate)
 
 
@@ -227,6 +233,27 @@ if chosenCalendarApp is "Apple Calendar" then
 			end if
 		end repeat
 	end tell
+	
+	tell application "Calendar"
+		set theCalendars to name of calendars whose name contains "year"
+	end tell
+	
+	set theStore to fetch store
+	
+	set startDate to date "Monday, March 1, 2021 at 12:00:00 AM"
+	set endDate to date "Saturday, March 6, 2021 at 12:00:00 AM"
+	
+	set theCalendars to fetch calendars theCalendars cal type list cal local event store theStore
+	
+	set theEvents to fetch events starting date startDate ending date endDate searching cals theCalendars event store theStore
+	
+	repeat with i from 1 to count of theEvents
+		set theNewEvent to modify zone event item i of theEvents time zone "Asia/Shanghai"
+		store event event theNewEvent event store theStore
+	end repeat
+	
+	
+	
 else
 	# Outlook --> Incomplete code, needs repeat function
 	# Creates all the events on the first day but does not repeat
