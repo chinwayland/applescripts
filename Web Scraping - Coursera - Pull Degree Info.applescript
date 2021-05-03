@@ -6,6 +6,8 @@ use scripting additions
 tell application "Safari"
 	activate
 	tell document 1
+		set URL to "https://www.coursera.org/degrees/business#mastersdegreelist"
+		delay 5
 		set numOfSchools to do JavaScript "document.getElementsByClassName('font-md font-weight-bold d-block').length"
 		set university to {}
 		repeat with i from 0 to numOfSchools - 1
@@ -20,6 +22,7 @@ end tell
 
 tell application "Numbers"
 	activate
+	make new document
 	tell document 1
 		tell sheet 1
 			tell table 1
