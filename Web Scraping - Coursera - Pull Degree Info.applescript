@@ -1,4 +1,4 @@
--- This script scrapes all the college degrees from Coursera.
+-- This script scrapes all the business degrees from a specific Coursera web page
 
 use AppleScript version "2.4" -- Yosemite (10.10) or later
 use scripting additions
