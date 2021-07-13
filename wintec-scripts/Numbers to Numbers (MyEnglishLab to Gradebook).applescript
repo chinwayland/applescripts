@@ -11,14 +11,19 @@ tell application "Numbers"
 	*)
 	
 	set documentNames to name of documents
-	tell me to say "Where is the gradebook report from MyEnglishLab?"
 	
+	tell me to say "Where is the gradebook report from MyEnglishLab?"
 	set sourceFile to choose from list documentNames with prompt "Source File:"
 	set sourceFile to item 1 of sourceFile
-	tell me to say "Where is the class gradebook that you want to update?"
 	
+	tell me to say "Where is the class gradebook that you want to update?"
 	set targetFile to choose from list documentNames with prompt "Target File:"
 	set targetFile to item 1 of targetFile
+	
+	set targetSheets to name of sheets of document targetFile
+	tell me to say "Which sheet in the target file do you want to update?"
+	set targetSheet to choose from list targetSheets with prompt "Target Sheet:"
+	set targetSheet to item 1 of targetSheet
 	
 	
 	tell document sourceFile
@@ -49,7 +54,7 @@ tell application "Numbers"
 				tell column 1
 					set classNames to {}
 					repeat with i from 1 to count of cells
-						if value of cell i contains "2020" then
+						if value of cell i contains "(ID: " then
 							set end of classNames to value of cell i
 						end if
 					end repeat
@@ -57,19 +62,19 @@ tell application "Numbers"
 				
 				# Ask user to choose the class to import grades from
 				tell me to say "Which class' grades do you want to import?"
-				set chosenClass to choose from list classNames with prompt "Which class do you wan to import grades from?"
+				set chosenClass to choose from list classNames with prompt "Which class do you want to import grades from?"
 				set chosenClass to item 1 of chosenClass # Flatten to string
 				tell me to say "Grabbing Data"
 			end tell
 		end tell
 	end tell
 end tell
-
+(*
 tell application "Script Debugger"
 	activate
 	set event log visible of documents to true
 end tell
-
+*)
 
 tell application "Numbers"
 	tell document sourceFile
@@ -118,7 +123,7 @@ tell application "Numbers"
 						set loopCounter to loopCounter + 1
 						repeat with j from (startOfClassInfoRowAddress + 1) to (endOfClassInfoRowAddress - 1)
 							if value of cell j of column i is not in skip then
-							set end of scores to {value of cell j of column 2, item loopCounter of columnHeaderNames, value of cell j of column i}
+								set end of scores to {value of cell j of column 2, item loopCounter of columnHeaderNames, value of cell j of column i}
 							end if
 						end repeat
 					end if
@@ -132,7 +137,7 @@ tell me to say "pasting data"
 tell application "Numbers"
 	activate
 	tell document targetFile
-		tell sheet 1
+		tell sheet targetSheet
 			tell table 1
 				# Check if Unit already has been imported, if not add columns
 				repeat with h from 1 to count of columnHeaderNames
@@ -148,7 +153,7 @@ tell application "Numbers"
 				
 				# get column where the usernames are				
 				tell row 1
-					set usernameColumnAddress to address of column of first cell whose value of it contains "MyEnglishLab Username"
+					set usernameColumnAddress to address of column of first cell whose value of it contains "MEL Username"
 				end tell
 				
 				(*
