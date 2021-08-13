@@ -1,4 +1,4 @@
--- This script turns off all calendar alerts for a calendar
+-- This script turns off all calendar alerts for a calendar -- does not work
 
 use AppleScript version "2.4" -- Yosemite (10.10) or later
 use scripting additions
