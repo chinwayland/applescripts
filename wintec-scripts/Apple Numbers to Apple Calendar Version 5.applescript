@@ -1,15 +1,11 @@
+-- This script converts an Excel timetable to Apple Calendar. Must open the excel timetable in Numbers first, then run this script
+
 use AppleScript version "2.4" -- Yosemite (10.10) or later
 use scripting additions
-use script "CalendarLib EC" version "1.1.5" -- put this at the top of your scripts
-
--- This script converts an Excel timetable to Apple Calendar. Must open the excel timetable in Numbers first, then run this script
+use script "CalendarLib EC" version "1.1.5" # This external library is for changing time zones of events
 
 say "Please open the calendar in Apple Numbers first. This script will first delete any calendars that contain the word 'Year' in the calendar name. Please confirm"
 display dialog "This script will first delete any calendars that contain the word 'Year' in the calendar name."
-
-#say "Which calendar app do you want to create the events in? Apple Calendar or Microsoft Outlook?"
-#set chosenCalendarApp to choose from list {"Apple Calendar", "Microsoft Outlook"} with prompt "Which calendar app do you want the calendars created in?"
-#set chosenCalendarApp to item 1 of chosenCalendarApp
 
 set chosenCalendarApp to "Apple Calendar"
 
@@ -50,29 +46,6 @@ end repeat
 say "The last day of the semester is: " & theDate & "Please Confirm, by pressing OK"
 display dialog "The last day of the semester is: " default answer (date string of theDate & space & time string of theDate)
 
-(*
--- Ask for delayed start
-say "Is the first day of the semester delayed?"
-set delayedYesOrNo to choose from list {"Yes", "No"} with prompt "Is the first day of the semester delayed?"
-set delayedYesOrNo to item 1 of delayedYesOrNo
-
-if delayedYesOrNo is "Yes" then
-	say "If the first day is delayed and not on a Monday, when is the delayed first day?"
-	repeat
-		set theCurrentDate to current date
-		display dialog "If the first day is delayed and not on a Monday, when is the delayed first day?" default answer (date string of theCurrentDate & space & time string of theCurrentDate)
-		set theText to text returned of result
-		try
-			if theText is not "" then
-				set delayedFirstDay to date theText -- a date object
-				exit repeat
-			end if
-		on error
-			beep
-		end try
-	end repeat
-end if
-*)
 
 set theDate to theDate + (days * 1)
 
@@ -107,59 +80,10 @@ tell application "Numbers"
 	
 	
 	tell document chosenDocument
-		(*
-		tell me to say "Choose the sheet named \"Classes\"."
-		set listOfSheets to name of sheets
-		set chosenSheet to choose from list listOfSheets
-		set chosenSheet to item 1 of chosenSheet
-		tell sheet chosenSheet
-			tell table 1
-				# get year one class names
-				set yearOneBegin to first cell whose value of it contains "Class"
-				set yearOneColumnAddress to address of column of yearOneBegin
-				set yearOneColumnCount to count of cells of column yearOneColumnAddress
-				set yearOneBegin to (address of row of yearOneBegin) + 1
-				
-				repeat with i from yearOneBegin to yearOneColumnCount
-					if value of cell i of column yearOneColumnAddress is missing value then
-						exit repeat
-					else
-						#						set end of classNames to "Year 1 " & (value of cell i of column yearOneColumnAddress & " " & value of cell i of column (yearOneColumnAddress + 4))
-						set end of classNames to value of cell i of column (yearOneColumnAddress + 4) & " Year 1 " & (value of cell i of column yearOneColumnAddress)
-					end if
-					#					value of cell i of column yearOneColumnAddress
-				end repeat
-				
-				# get year two class names
-				set yearOneBegin to second cell whose value of it contains "Class"
-				set yearOneColumnAddress to address of column of yearOneBegin
-				set yearOneColumnCount to count of cells of column yearOneColumnAddress
-				set yearOneBegin to (address of row of yearOneBegin) + 1
-				
-				repeat with i from yearOneBegin to yearOneColumnCount
-					if value of cell i of column yearOneColumnAddress is missing value then
-						exit repeat
-					else
-						#						set end of classNames to "Year 2 " & (value of cell i of column yearOneColumnAddress & " " & value of cell i of column (yearOneColumnAddress + 4))
-						set end of classNames to value of cell i of column (yearOneColumnAddress + 4) & " Year 2 " & (value of cell i of column yearOneColumnAddress)
-					end if
-					#					value of cell i of column yearOneColumnAddress
-				end repeat
-				
-				set sortedList to my simple_sort(the classNames)
-				set classNames to sortedList
-				
-			end tell
-			
-		end tell
-		*)
-		
-		
 		tell me to say "Choose the sheet with the timetable."
 		set listOfSheets to name of sheets
 		set chosenSheet to choose from list listOfSheets
 		set chosenSheet to item 1 of chosenSheet
-		
 		
 		tell me to say "Getting class names."
 		
@@ -205,34 +129,6 @@ tell application "Numbers"
 					end if
 					
 				end repeat
-				(*
-				# Create name for all calendars Year X / Class / Teacher Name
-				
-				set columnNumber to address of column of cell 1 where value of it contains "New Teacher"
-				set rowNumber to address of row of cell 1 where value of it contains "New Teacher"
-				set className to {}
-				
-				# Name Year 1 classes
-				repeat with i from rowNumber + 1 to count of rows of column columnNumber
-					if value of cell i of column columnNumber is not missing value then
-						set end of className to "Bear 1 " & value of cell i of column (columnNumber - 2) & " " & value of cell i of column columnNumber
-					else
-						exit repeat
-					end if
-				end repeat
-				
-				set columnNumber to address of column of cell 2 where value of it contains "New Teacher"
-				set rowNumber to address of row of cell 2 where value of it contains "New Teacher"
-				
-				# Name Year 2 classes
-				repeat with i from rowNumber + 1 to count of rows of column columnNumber
-					if value of cell i of column columnNumber is not missing value then
-						set end of className to "Bear 2 " & value of cell i of column (columnNumber - 2) & " " & value of cell i of column columnNumber
-					else
-						exit repeat
-					end if
-				end repeat
-				*)
 				# Grab data from spreadsheet
 				set lessons to {}
 				repeat with i from 2 to 15
@@ -314,38 +210,6 @@ repeat with lesson in lessons7
 	end if
 end repeat
 
-(*
-set classNames to {}
-repeat with lesson in lessons8
-	set end of classNames to item 1 of lesson
-end repeat
-
-set classNames2 to addr(classNames)
-*)
-
-(*
-set lessons9 to {}
-#set classNamesTeacherFirst to {}
-repeat with lesson in lessons8
-	if item 1 of lesson contains "/" then
-		set teacherFirst to word 4 of item 1 of lesson
-		set teacherSecond to word 5 of item 1 of lesson
-		set yearWord to word 1 of item 1 of lesson
-		set yearNumber to word 2 of item 1 of lesson
-		set className to word 3 of item 1 of lesson
-		set eventName to teacherFirst & "/" & teacherSecond & " " & yearWord & " " & yearNumber & " " & className
-	else
-		set teacher to word 4 of item 1 of lesson
-		set yearWord to word 1 of item 1 of lesson
-		set yearNumber to word 2 of item 1 of lesson
-		set className to word 3 of item 1 of lesson
-		set eventName to teacher & " " & yearWord & " " & yearNumber & " " & className
-	end if
-	set end of lessons9 to {eventName, item 2 of lesson, item 3 of lesson}
-end repeat
-*)
-
-
 # Creates the calendars in the chosen app
 if chosenCalendarApp is "Apple Calendar" then
 	-- Deletes previous work calendars
@@ -357,7 +221,6 @@ if chosenCalendarApp is "Apple Calendar" then
 			delete
 		end tell
 	end tell
-	
 	
 	# add calendars and events to the Calendar app
 	say "Creating Calendars"
@@ -384,7 +247,6 @@ if chosenCalendarApp is "Apple Calendar" then
 		end repeat
 	end tell
 	
-	
 	-- Sets the time zone
 	tell me to say "Changing the time zone to the Chinese time zone"
 	
@@ -406,22 +268,6 @@ if chosenCalendarApp is "Apple Calendar" then
 		store event event theNewEvent event store theStore
 	end repeat
 	
-	(*
-	-- remove days because of delayed start
-	if delayedYesOrNo is "Yes" then
-		set theStore to fetch store
-		
-		set theCalendars to fetch calendars {} cal type list cal cloud event store theStore
-		set startingDate to firstDay
-		set endingDate to delayedFirstDay - (days * 1)
-		set theEvents to fetch events starting date startingDate ending date endingDate searching cals theCalendars event store theStore
-		
-		repeat with theEvent in theEvents
-			remove event event theEvent event store theStore without future events
-		end repeat
-		
-	end if
-	*)
 	# export calendars to the desktop
 	
 	say "Exporting the calendars to the Desktop"
@@ -442,38 +288,25 @@ if chosenCalendarApp is "Apple Calendar" then
 					if calendarName contains "Year" then
 						set end of calendarNames to calendarName
 						key code 120 using {control down}
-						#					delay 1
 						key code 124 #right arrow
-						#					delay 1
 						key code 124 #right arrow
-						#					delay 1
-						#keystroke return
-						#					delay 1
 						repeat 7 times
-							
 							key code 125 # down arrow
-							#						delay 1
 						end repeat
 						key code 124 # right arrow
-						#					delay 1
 						keystroke return
 						delay 1
 						keystroke "D" using {command down, shift down} # change to desktop
-						#					delay 1
 						keystroke return # save to desktop
 						delay 1
 						if button 1 of sheet 1 of sheet 1 of window 1 exists then
 							keystroke tab
-							#						delay 1
 							keystroke space
 							delay 1
 						end if
 						key code 125 # down arrow
-						#					delay 1
 						keystroke "f" using command down # search bar
-						#					delay 1
 						keystroke tab # moves focus to calendar list
-						#					delay 1
 					else
 						key code 125 # down arrow
 					end if
@@ -530,120 +363,6 @@ if chosenCalendarApp is "Apple Calendar" then
 			end tell
 		end tell
 	end tell
-	(*
-	tell application "System Events"
-		tell process "System Preferences"
-			tell window 1
-				tell sheet 1
-					tell button 2
-						click #click the merge button
-						delay 90
-					end tell
-				end tell
-			end tell
-		end tell
-	end tell
-	*)
-	(*
-	tell application "Calendar"
-		activate
-		delay 1
-	end tell
-	
-	say "Publishing the calendars by making them public"
-	tell application "System Events"
-		tell process "Calendar"
-			set calendarNames to {}
-			set calendarURLs to {}
-			
-			#keystroke "f" using command down # search bar
-			#delay 1
-			keystroke tab # moves focus to calendar list
-			delay 1
-			key code 126 using option down # go to first one
-			delay 1
-			
-			set countOfRows to count of rows in outline 1 of scroll area 1 of splitter group 1 of splitter group 1 of window 1
-			repeat with i from 1 to countOfRows
-				try
-					set calendarNameText to value of text field 1 of UI element 1 of row i of outline 1 of scroll area 1 of splitter group 1 of splitter group 1 of window 1
-					if calendarNameText contains "Year" then
-						set end of calendarNames to calendarNameText
-						tell menu "Edit" of menu bar item "Edit" of menu bar 1
-							click # click Edit Menu
-						end tell
-						tell UI element 15 of menu "Edit" of menu bar item "Edit" of menu bar 1
-							click # click Share Calendar under Edit Menu
-						end tell
-						#delay 1
-						tell checkbox 1 of pop over 1 of row i of outline 1 of scroll area 1 of splitter group 1 of splitter group 1 of window 1
-							click # click the share calendar checkbox
-						end tell
-						#delay 1
-						tell button "Done" of pop over 1 of row i of outline 1 of scroll area 1 of splitter group 1 of splitter group 1 of window 1
-							click
-						end tell
-						
-						keystroke "I" using command down
-						delay 1
-						tell window 1
-							tell sheet 1
-								tell scroll area 1
-									UI elements
-									tell text area 1
-										set theURL to value
-									end tell
-								end tell
-							end tell
-						end tell
-						set end of calendarURLs to {calendarNameText, theURL}
-						
-						
-						#delay 1
-						keystroke tab
-						delay 1
-						key code 125 # down arrow
-						delay 1
-					else
-						key code 125 # down arrow
-					end if
-				end try
-			end repeat
-		end tell
-	end tell
-	
-	
-	say "Pasting public calendar links into a Numbers spreadsheet"
-	tell application "Numbers"
-		activate
-		make new document
-		tell document 1
-			tell sheet 1
-				tell table 1
-					tell row 1
-						set value of cell 1 to "Calendar Name"
-						set value of cell 2 to "URL"
-					end tell
-					
-					repeat with i from 1 to count of calendarURLs
-						set calendarName to item 1 of item i of calendarURLs
-						set theURL to item 2 of item i of calendarURLs
-						if not (exists row (i + 1)) then
-							make new row
-						end if
-						tell row (i + 1)
-							set value of cell 1 to calendarName
-							set value of cell 2 to theURL
-						end tell
-						
-					end repeat
-				end tell
-			end tell
-		end tell
-	end tell
-	*)
-	
-	
 else
 	# Outlook --> Incomplete code, needs repeat function
 	# Creates all the events on the first day but does not repeat
