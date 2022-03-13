@@ -5,12 +5,12 @@ use scripting additions
 use script "CalendarLib EC" version "1.1.5" # This external library is for changing time zones of events
 
 say "Please open the calendar in Apple Numbers first. This script will first delete any calendars that contain the word 'Year' in the calendar name. Please confirm by presing OK"
-display dialog "This script will first delete any calendars that contain the word 'Year' in the calendar name."
+display dialog "Please open the calendar in Apple Numbers first. This script will first delete any calendars that contain the word 'Year' in the calendar name. Please confirm by presing OK"
 
 set chosenCalendarApp to "Apple Calendar" # Originally offers to output to Outlook, but got rid of that portion of the script
 
 # User selects the first day of the semester for the repeating events
-say "When is the first day of the semester? (Should be on a Monday, you can enter a delayed start day later)"
+say "When is the first day of the semester? Should be on a Monday..."
 repeat
 	set theCurrentDate to current date
 	display dialog "When is the first day of the semester? (Should be on a Monday, you can enter a delayed start day later)" default answer (date string of theCurrentDate & space & time string of theCurrentDate)
@@ -24,8 +24,8 @@ repeat
 		beep
 	end try
 end repeat
-say "The first day of the semester is: " & firstDay & "Please Confirm, by pressing OK"
-display dialog "The first day of the semester is: " default answer (date string of firstDay & space & time string of firstDay)
+say "You entered: " & firstDay & "Please Confirm, by pressing OK"
+display dialog "You entered: " default answer (date string of firstDay & space & time string of firstDay)
 
 # User selects the last day of the semester, to stop the events repeating past that date
 say "When is the last day of the semester?"
@@ -42,8 +42,8 @@ repeat
 		beep
 	end try
 end repeat
-say "The last day of the semester is: " & theDate & "Please Confirm, by pressing OK"
-display dialog "The last day of the semester is: " default answer (date string of theDate & space & time string of theDate)
+say "You entered: " & theDate & "Please Confirm, by pressing OK"
+display dialog "You entered: " default answer (date string of theDate & space & time string of theDate)
 set theDate to theDate + (days * 1)
 set a to (year of theDate)
 set b to (month of theDate) as number
@@ -201,6 +201,17 @@ repeat with lesson in lessons7
 end repeat
 
 # Creates the calendars in Apple Calendar
+
+# switches the view to the week view and goes to the first day of events being created
+tell application "Calendar"
+	activate
+	switch view to week view
+	view calendar at firstDay
+	
+	# Ask user if ready to create calendars and events
+	tell me to say "Ready to create calendars and events? This will delete previous calendars with the word year."
+	display dialog "Ready to create calendars? This will delete previous calendars with the word year."
+end tell
 
 # Deletes previous work calendars
 tell application "Calendar"
