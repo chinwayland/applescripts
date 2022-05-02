@@ -222,6 +222,61 @@ tell application "Calendar"
 	end tell
 end tell
 
+(* ## Under development - Ability to choose between calenders by class or calendars by teacher
+say "Do you want to create one calendar for each teacher or one calendar for each class?"
+choose from list {"One Calendar for each class", "One Calendar for each Teacher"}
+
+if item 1 of result contains "class" then
+	
+	say "class"
+	# add calendars and events to the Calendar app
+	say "Creating Calendars"
+	tell application "Calendar"
+		activate
+		repeat with i from 1 to count of classNames
+			if not (exists (calendar (item i of classNames))) then
+				create calendar with name item i of classNames
+			end if
+		end repeat
+		tell me to say "Creating Events"
+		repeat with lesson in lessons8
+			if calendar (item 1 of lesson) exists then
+				tell calendar (item 1 of lesson)
+					make new event with properties {summary:item 1 of lesson, location:item 3 of lesson, start date:item 2 of lesson, end date:(item 2 of lesson) + (minutes * 80), recurrence:endOfRecurrence}
+				end tell
+			else
+				set problem to words of item 1 of lesson
+				set newEventSummary to item 1 of problem & " " & item 2 of problem & " " & item 3 of problem & " " & item 4 of problem
+				tell calendar newEventSummary
+					make new event with properties {summary:item 1 of lesson, location:item 3 of lesson, start date:item 2 of lesson, end date:(item 2 of lesson) + (minutes * 80), recurrence:endOfRecurrence}
+				end tell
+			end if
+		end repeat
+	end tell
+	
+else
+	say "teacher is under development"
+	say "Creating Calendars"
+	tell application "Calendar"
+		activate
+		repeat with i from 1 to count of roomNumbers
+			if not (exists (calendar (item i of item 1 of roomNumbers))) then
+				create calendar with name item i of item 1 of classNames
+			end if
+		end repeat
+		
+		tell me to say "Creating Events"
+		
+		set teacherNames to {}
+		repeat with i from 1 to count of roomNumbers
+			set teacherName to item 1 of item i of roomNumbers
+			set end of teacherNames to teacherName
+			
+		end repeat
+	end tell
+end if
+*)
+
 # add calendars and events to the Calendar app
 say "Creating Calendars"
 tell application "Calendar"
@@ -311,6 +366,8 @@ tell me to say "Calendars have been exported to your desktop"
 
 # This turns off and on the iCloud Calendar in preferences so the calendars gets uploaded to the cloud
 say "Moving Calendars from local to iCloud"
+
+# Switches to System Preferences, quits it, and then opens it again
 tell application "System Preferences"
 	activate
 	delay 3
@@ -324,7 +381,7 @@ tell application "System Events"
 	tell process "System Preferences"
 		tell window 1
 			tell button 1
-				click
+				click # Clicks the Apple ID button
 				delay 3
 			end tell
 		end tell
@@ -337,7 +394,22 @@ tell application "System Events"
 			tell group 1
 				tell scroll area 1
 					tell table 1
-						tell row 8
+						
+						# This loop identifies which row is the one the Calendars app/service and sets theRow to that row
+						repeat with i from 1 to count of rows
+							tell row i
+								tell UI element 1
+									tell UI element 3
+										if name is "Calendars" then
+											set theRow to i
+											exit repeat
+										end if
+									end tell
+								end tell
+							end tell
+						end repeat
+						
+						tell row theRow
 							tell UI element 1
 								tell UI element 1
 									tell me to say "Unchecking iCloud Calendars."
@@ -345,7 +417,7 @@ tell application "System Events"
 									delay 5
 									tell me to say "Checking iCloud Calendars. Please wait 180 seconds. Moving calendars to iCloud."
 									click # turn on icloud for calendar
-									delay 180
+									delay 5
 								end tell
 							end tell
 						end tell
@@ -355,6 +427,12 @@ tell application "System Events"
 		end tell
 	end tell
 end tell
+
+tell application "Calendar"
+	activate
+end tell
+
+delay 175
 say "Finished."
 
 # handler/function to sort a list
