@@ -117,8 +117,9 @@ tell application "Numbers"
 					if value of cell i of column (columnNumber - 1) is not missing value then
 						set end of roomNumbers to {(value of cell i of column (columnNumber - 1)), value of cell i of column columnNumber as text}
 					end if
-					
 				end repeat
+				
+				say "There are " & (count of roomNumbers) & "teachers and rooms"
 				# Grab data from spreadsheet
 				set lessons to {}
 				repeat with i from 2 to 15
@@ -195,6 +196,7 @@ repeat with lesson in lessons7
 		repeat with room in roomNumbers
 			if item 1 of lesson contains item 1 of room then
 				set end of lessons8 to {item 1 of lesson, item 2 of lesson, item 2 of room}
+				exit repeat
 			end if
 		end repeat
 	end if
@@ -222,61 +224,65 @@ tell application "Calendar"
 	end tell
 end tell
 
-(* ## Under development - Ability to choose between calenders by class or calendars by teacher
-say "Do you want to create one calendar for each teacher or one calendar for each class?"
-choose from list {"One Calendar for each class", "One Calendar for each Teacher"}
+## Under development - Ability to choose between calenders by class or calendars by teacher
+#say "Do you want to create one calendar for each teacher or one calendar for each class?"
+#choose from list {"One Calendar for each class", "One Calendar for each Teacher"}
 
-if item 1 of result contains "class" then
+#say "class"
+# add calendars and events to the Calendar app
+say "Creating one Calendar for each class"
+tell application "Calendar"
+	activate
+	repeat with i from 1 to count of classNames
+		if not (exists (calendar (item i of classNames))) then
+			create calendar with name item i of classNames
+		end if
+	end repeat
+	tell me to say "Creating Events"
+	repeat with lesson in lessons8
+		if calendar (item 1 of lesson) exists then
+			tell calendar (item 1 of lesson)
+				make new event with properties {summary:item 1 of lesson, location:item 3 of lesson, start date:item 2 of lesson, end date:(item 2 of lesson) + (minutes * 80), recurrence:endOfRecurrence}
+			end tell
+		else
+			set problem to words of item 1 of lesson
+			set newEventSummary to item 1 of problem & " " & item 2 of problem & " " & item 3 of problem & " " & item 4 of problem
+			tell calendar newEventSummary
+				make new event with properties {summary:item 1 of lesson, location:item 3 of lesson, start date:item 2 of lesson, end date:(item 2 of lesson) + (minutes * 80), recurrence:endOfRecurrence}
+			end tell
+		end if
+	end repeat
+end tell
+
+say "Creating one calendar for each teacher"
+tell application "Calendar"
+	activate
+	repeat with i from 1 to count of roomNumbers
+		if not (exists (calendar (item 1 of item i of roomNumbers))) then
+			create calendar with name item 1 of item i of roomNumbers
+		end if
+	end repeat
 	
-	say "class"
-	# add calendars and events to the Calendar app
-	say "Creating Calendars"
-	tell application "Calendar"
-		activate
-		repeat with i from 1 to count of classNames
-			if not (exists (calendar (item i of classNames))) then
-				create calendar with name item i of classNames
-			end if
-		end repeat
-		tell me to say "Creating Events"
-		repeat with lesson in lessons8
-			if calendar (item 1 of lesson) exists then
-				tell calendar (item 1 of lesson)
+	tell me to say "Creating Events"
+	
+	set teacherNames to {}
+	repeat with i from 1 to count of roomNumbers
+		set teacherName to item 1 of item i of roomNumbers
+		set end of teacherNames to teacherName
+	end repeat
+	
+	repeat with lesson in lessons8
+		repeat with teacherName in teacherNames
+			if item 1 of lesson contains teacherName then
+				tell calendar teacherName
 					make new event with properties {summary:item 1 of lesson, location:item 3 of lesson, start date:item 2 of lesson, end date:(item 2 of lesson) + (minutes * 80), recurrence:endOfRecurrence}
 				end tell
-			else
-				set problem to words of item 1 of lesson
-				set newEventSummary to item 1 of problem & " " & item 2 of problem & " " & item 3 of problem & " " & item 4 of problem
-				tell calendar newEventSummary
-					make new event with properties {summary:item 1 of lesson, location:item 3 of lesson, start date:item 2 of lesson, end date:(item 2 of lesson) + (minutes * 80), recurrence:endOfRecurrence}
-				end tell
 			end if
 		end repeat
-	end tell
-	
-else
-	say "teacher is under development"
-	say "Creating Calendars"
-	tell application "Calendar"
-		activate
-		repeat with i from 1 to count of roomNumbers
-			if not (exists (calendar (item i of item 1 of roomNumbers))) then
-				create calendar with name item i of item 1 of classNames
-			end if
-		end repeat
-		
-		tell me to say "Creating Events"
-		
-		set teacherNames to {}
-		repeat with i from 1 to count of roomNumbers
-			set teacherName to item 1 of item i of roomNumbers
-			set end of teacherNames to teacherName
-			
-		end repeat
-	end tell
-end if
-*)
+	end repeat
+end tell
 
+(*
 # add calendars and events to the Calendar app
 say "Creating Calendars"
 tell application "Calendar"
@@ -301,6 +307,8 @@ tell application "Calendar"
 		end if
 	end repeat
 end tell
+
+*)
 
 -- Sets the time zone
 tell me to say "Changing the time zone to the Chinese time zone"
@@ -355,6 +363,32 @@ tell application "System Events"
 					key code 125 # down arrow
 					keystroke "f" using command down # search bar
 					keystroke tab # moves focus to calendar list
+				else if calendarName does not contain "Year" then
+					repeat with teacherName in teacherNames
+						if calendarName contains teacherName then
+							set end of calendarNames to calendarName
+							key code 120 using {control down}
+							key code 124 #right arrow
+							key code 124 #right arrow
+							repeat 7 times
+								key code 125 # down arrow
+							end repeat
+							key code 124 # right arrow
+							keystroke return
+							delay 1
+							keystroke "D" using {command down, shift down} # change to desktop
+							keystroke return # save to desktop
+							delay 1
+							if button 1 of sheet 1 of sheet 1 of window 1 exists then
+								keystroke tab
+								keystroke space
+								delay 1
+							end if
+							key code 125 # down arrow
+							keystroke "f" using command down # search bar
+							keystroke tab # moves focus to calendar list
+						end if
+					end repeat
 				else
 					key code 125 # down arrow
 				end if
@@ -415,7 +449,7 @@ tell application "System Events"
 									tell me to say "Unchecking iCloud Calendars."
 									click # turn off icloud for calendar
 									delay 5
-									tell me to say "Checking iCloud Calendars. Please wait 180 seconds. Moving calendars to iCloud."
+									tell me to say "Checking iCloud Calendars. Please wait 160 seconds. Moving calendars to iCloud."
 									click # turn on icloud for calendar
 									delay 5
 								end tell
@@ -432,7 +466,7 @@ tell application "Calendar"
 	activate
 end tell
 
-delay 175
+delay 160
 say "Finished."
 
 # handler/function to sort a list
