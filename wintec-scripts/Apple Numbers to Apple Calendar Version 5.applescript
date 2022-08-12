@@ -224,6 +224,20 @@ tell application "Calendar"
 	end tell
 end tell
 
+set teacherNames to {}
+repeat with i from 1 to count of roomNumbers
+	set end of teacherNames to item 1 of item i of roomNumbers
+end repeat
+
+tell application "Calendar"
+	say "Deleting calendars with previous teacher name"
+	repeat with teacherName in teacherNames
+		tell calendar teacherName
+			delete
+		end tell
+	end repeat
+end tell
+
 ## Under development - Ability to choose between calenders by class or calendars by teacher
 #say "Do you want to create one calendar for each teacher or one calendar for each class?"
 #choose from list {"One Calendar for each class", "One Calendar for each Teacher"}
@@ -254,9 +268,11 @@ tell application "Calendar"
 	end repeat
 end tell
 
-say "Creating one calendar for each teacher"
 tell application "Calendar"
 	activate
+	
+	say "Creating one calendar for each teacher"
+	
 	repeat with i from 1 to count of roomNumbers
 		if not (exists (calendar (item 1 of item i of roomNumbers))) then
 			create calendar with name item 1 of item i of roomNumbers
@@ -315,11 +331,12 @@ tell me to say "Changing the time zone to the Chinese time zone"
 tell application "Calendar"
 	set theCalendars to name of calendars whose name contains "Year"
 end tell
+set the theCalendars2 to theCalendars & teacherNames
 set theStore to fetch store
 set startDate to firstDay
 set endDate to startDate + days * 5
-set theCalendars to fetch calendars theCalendars cal type list cal local event store theStore
-set theEvents to fetch events starting date startDate ending date endDate searching cals theCalendars event store theStore
+set theCalendars3 to fetch calendars theCalendars2 cal type list cal local event store theStore
+set theEvents to fetch events starting date startDate ending date endDate searching cals theCalendars3 event store theStore
 repeat with i from 1 to count of theEvents
 	set theNewEvent to modify zone event item i of theEvents time zone "Asia/Shanghai"
 	store event event theNewEvent event store theStore
@@ -449,7 +466,7 @@ tell application "System Events"
 									tell me to say "Unchecking iCloud Calendars."
 									click # turn off icloud for calendar
 									delay 5
-									tell me to say "Checking iCloud Calendars. Please wait 160 seconds. Moving calendars to iCloud."
+									tell me to say "Checking iCloud Calendars. Please wait 150 seconds. Moving calendars to iCloud."
 									click # turn on icloud for calendar
 									delay 5
 								end tell
@@ -466,7 +483,7 @@ tell application "Calendar"
 	activate
 end tell
 
-delay 160
+delay 150
 say "Finished."
 
 # handler/function to sort a list
