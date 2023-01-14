@@ -229,11 +229,14 @@ repeat with i from 1 to count of roomNumbers
 	set end of teacherNames to item 1 of item i of roomNumbers
 end repeat
 
+
 tell application "Calendar"
 	say "Deleting calendars with previous teacher name"
 	repeat with teacherName in teacherNames
 		tell calendar teacherName
-			delete
+			try
+				delete
+			end try
 		end tell
 	end repeat
 end tell
@@ -355,21 +358,24 @@ tell application "System Events"
 		key code 126 using {option down} # up arrow --> moves focus to first calendar / option up arrow
 		#		delay 1
 		set countOfRows to count of rows in outline 1 of scroll area 1 of splitter group 1 of splitter group 1 of window 1
-		repeat with i from 1 to countOfRows
+		repeat with i from 1 to countOfRows - 1
 			try
 				set calendarName to value of text field 1 of UI element 1 of row i of outline 1 of scroll area 1 of splitter group 1 of splitter group 1 of window 1
 				if calendarName contains "Year" then
 					set end of calendarNames to calendarName
-					key code 120 using {control down}
+					key code {63, 120} using {control down}
 					key code 124 #right arrow
 					key code 124 #right arrow
-					repeat 7 times
+					repeat 8 times
 						key code 125 # down arrow
 					end repeat
-					key code 124 # right arrow
-					keystroke return
 					delay 1
-					keystroke "D" using {command down, shift down} # change to desktop
+					keystroke return # move focus right
+					delay 1
+					keystroke return # click export
+					delay 1
+					keystroke "D" using {command down, shift down} # change to export folder desktop
+					delay 1
 					keystroke return # save to desktop
 					delay 1
 					if button 1 of sheet 1 of sheet 1 of window 1 exists then
@@ -384,16 +390,19 @@ tell application "System Events"
 					repeat with teacherName in teacherNames
 						if calendarName contains teacherName then
 							set end of calendarNames to calendarName
-							key code 120 using {control down}
+							key code {63, 120} using {control down}
 							key code 124 #right arrow
 							key code 124 #right arrow
-							repeat 7 times
+							repeat 8 times
 								key code 125 # down arrow
 							end repeat
-							key code 124 # right arrow
-							keystroke return
 							delay 1
-							keystroke "D" using {command down, shift down} # change to desktop
+							keystroke return # move focus right
+							delay 1
+							keystroke return # click export
+							delay 1
+							keystroke "D" using {command down, shift down} # change to export folder desktop
+							delay 1
 							keystroke return # save to desktop
 							delay 1
 							if button 1 of sheet 1 of sheet 1 of window 1 exists then
@@ -419,7 +428,7 @@ tell me to say "Calendars have been exported to your desktop"
 say "Moving Calendars from local to iCloud"
 
 # Switches to System Preferences, quits it, and then opens it again
-tell application "System Preferences"
+tell application "System Settings"
 	activate
 	delay 3
 	quit
