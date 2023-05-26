@@ -8,36 +8,29 @@ tell application "Numbers"
 		tell sheet 1
 			tell table 1
 				set columnStart to 3
-				set tableData to {}
-				set rowStart to 5
+				set rowStart to 4
 				set testInfo to {}
-				set firstDay to value of cell 2 of column 3
-				set theDate to words of firstDay
-				set theDate to item 1 of theDate
-				set theDay to character 1 of theDate & character 2 of theDate
-				set testDate to "12/" & theDay & "/22"
-				tell me to set testDate to date testDate
-				set firstDay to testDate
-				repeat with columnIndex from columnStart to 13 by 5
-					set testDate to value of cell 2 of column columnIndex
-					set theDate to words of testDate
-					set theDate to item 1 of theDate
-					set theDay to character 1 of theDate & character 2 of theDate
-					set testDate to "12/" & theDay & "/22"
+				repeat with columnIndex from columnStart to 7
+					if columnIndex < 5 then
+						set testDate to "5/29/23"
+					else
+						set testDate to "5/30/23"
+					end if
 					tell me to set testDate to date testDate
-					repeat with rowIndex from rowStart to rowStart + 14
-						if rowIndex < 9 then
+					tell me to set firstDay to testDate
+					repeat with rowIndex from rowStart to rowStart + 30
+						if rowIndex < 13 then
 							set eventTime to testDate + (hours * 8) + (minutes * 10)
-						else if rowIndex < 13 then
+						else if rowIndex < 20 then
 							set eventTime to testDate + (hours * 10) + (minutes * 10)
-						else if rowIndex < 17 then
-							set eventTime to testDate + (hours * 13) + (minutes * 40)
+						else if rowIndex < 29 then
+							set eventTime to testDate + (hours * 14) + (minutes * 10)
 						else
-							set eventTime to testDate + (hours * 15) + (minutes * 20)
+							set eventTime to testDate + (hours * 15) + (minutes * 50)
 						end if
 						if value of cell rowIndex of column columnIndex is not missing value then
 							if value of cell rowIndex of column columnIndex is not "x" then
-								set end of testInfo to {eventTime, value of cell rowIndex of column columnIndex, value of cell rowIndex of column (columnIndex + 1), value of cell rowIndex of column (columnIndex + 2), value of cell rowIndex of column (columnIndex + 3)}
+								set end of testInfo to {eventTime, value of cell rowIndex of column columnIndex}
 							end if
 						end if
 					end repeat
@@ -46,6 +39,8 @@ tell application "Numbers"
 		end tell
 	end tell
 end tell
+
+
 
 tell application "Calendar"
 	activate
@@ -67,7 +62,7 @@ tell application "Calendar"
 	
 	repeat with info in testInfo
 		tell calendar "Final Exams - Written"
-			make new event with properties {summary:item 2 of info & " " & item 3 of info & " " & item 5 of info, start date:item 1 of info, end date:(item 1 of info) + (minutes * 80), location:item 4 of info}
+			make new event with properties {summary:item 2 of info, start date:item 1 of info, end date:(item 1 of info) + (minutes * 80)}
 		end tell
 	end repeat
 	
@@ -94,3 +89,4 @@ repeat with i from 1 to count of theEvents
 	set theNewEvent to modify zone event item i of theEvents time zone "Asia/Shanghai"
 	store event event theNewEvent event store theStore
 end repeat
+
